@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: 'Futura PT Heavy';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Futura PT Heavy'), url('./assets/FuturaCyrillicHeavy.woff') format('woff');
+}
