@@ -23,7 +23,7 @@
  * THE SOFTWARE.
  */
 import { Vector2, Scene, Group } from 'three';
-import  { Tile } from './Tile.js';
+import { Tile } from './Tile.js';
 import {hashTile} from '../util/Utils.js';
 import {TileMap} from "./TileMap";
 

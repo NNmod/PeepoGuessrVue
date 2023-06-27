@@ -36,7 +36,7 @@ export class MarkerSet extends Scene {
 
     
     clear() {
-        [...this.markers].forEach(marker => this.remove(marker[1]));
+        this.markers.forEach((marker) => this.remove(marker));
     }
 
     add(...object) {

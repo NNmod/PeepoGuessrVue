@@ -112,23 +112,23 @@ export class Map {
 		this.lowresMaterial = this.createLowresMaterial(lowresVertexShader, lowresFragmentShader, uniforms);
 
 		return Promise.all([settingsPromise, textureFilePromise])
-            .then(values => {
-                let textures = values[1];
-                if (textures === null) throw new Error("Failed to parse textures.json!");
+			.then(values => {
+				let textures = values[1];
+				if (textures === null) throw new Error("Failed to parse textures.json!");
 
-                this.hiresMaterial = this.createHiresMaterial(hiresVertexShader, hiresFragmentShader, uniforms, textures);
+				this.hiresMaterial = this.createHiresMaterial(hiresVertexShader, hiresFragmentShader, uniforms, textures);
 
-                this.hiresTileManager = new TileManager(new TileLoader(`${this.data.dataUrl}tiles/0/`, this.hiresMaterial, this.data.hires, this.loadBlocker, tileCacheHash), this.onTileLoad("hires"), this.onTileUnload("hires"), this.events);
+				this.hiresTileManager = new TileManager(new TileLoader(`${this.data.dataUrl}tiles/0/`, this.hiresMaterial, this.data.hires, this.loadBlocker, tileCacheHash), this.onTileLoad("hires"), this.onTileUnload("hires"), this.events);
 				this.hiresTileManager.scene.matrixWorldAutoUpdate = false;
 
-                this.lowresTileManager = [];
+				this.lowresTileManager = [];
 				for (let i = 0; i < this.data.lowres.lodCount; i++) {
 					this.lowresTileManager[i] = new TileManager(new LowresTileLoader(`${this.data.dataUrl}tiles/`, this.data.lowres, i + 1, lowresVertexShader, lowresFragmentShader, uniforms, async () => {}, tileCacheHash), this.onTileLoad("lowres"), this.onTileUnload("lowres"), this.events);
 					this.lowresTileManager[i].scene.matrixWorldAutoUpdate = false;
 				}
 
-                alert(this.events, `Map '${this.data.id}' is loaded.`, "fine");
-            });
+				alert(this.events, `Map '${this.data.id}' is loaded.`, "fine");
+			});
 	}
 
 	/**
@@ -143,10 +143,6 @@ export class Map {
 				this.data.sorting = Number.isInteger(worldSettings.sorting) ? worldSettings.sorting : this.data.sorting;
 
 				this.data.startPos = {...this.data.startPos, ...vecArrToObj(worldSettings.startPos, true)};
-				
-				this.data.minPos = {...this.data.minPos, ...vecArrToObj(worldSettings.minPos, true)}
-
-				this.data.maxPos = {...this.data.maxPos, ...vecArrToObj(worldSettings.maxPos, true)}
 
 				if (worldSettings.skyColor && worldSettings.skyColor.length >= 3) {
 					this.data.skyColor.setRGB(
@@ -216,23 +212,23 @@ export class Map {
 		this.hiresTileManager.loadAroundTile(hiresX, hiresZ, hiresViewX, hiresViewZ);
 	}
 
-    /**
-     * Loads the settings.json file for this map
-     * @returns {Promise<Object>}
-     */
-    loadSettingsFile() {
-        return new Promise((resolve, reject) => {
-            alert(this.events, `Loading settings for map '${this.data.id}'...`, "fine");
+	/**
+	 * Loads the settings.json file for this map
+	 * @returns {Promise<Object>}
+	 */
+	loadSettingsFile() {
+		return new Promise((resolve, reject) => {
+			alert(this.events, `Loading settings for map '${this.data.id}'...`, "fine");
 
-            let loader = new FileLoader();
-            loader.setResponseType("json");
-            loader.load(this.data.settingsUrl + "?" + generateCacheHash(),
-                resolve,
-                () => {},
-                () => reject(`Failed to load the settings.json for map: ${this.data.id}`)
-            )
-        });
-    }
+			let loader = new FileLoader();
+			loader.setResponseType("json");
+			loader.load(this.data.settingsUrl + "?" + generateCacheHash(),
+				resolve,
+				() => {},
+				() => reject(`Failed to load the settings.json for map: ${this.data.id}`)
+			)
+		});
+	}
 
 	/**
 	 * Loads the textures.json file for this map

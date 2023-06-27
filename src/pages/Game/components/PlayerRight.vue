@@ -126,6 +126,7 @@ export default {
     max-width: 344px;
     font-family: "Futura PT Heavy", sans-serif;
     font-size: 2vh;
+    text-align: center;
     white-space: nowrap;
     overflow:hidden;
 }

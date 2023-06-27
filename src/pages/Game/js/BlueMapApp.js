@@ -46,8 +46,10 @@ export class BlueMapApp {
         this.mapControls = new MapControls(this.mapViewer.renderer.domElement);
         this.freeFlightControls = new FreeFlightControls(this.mapViewer.renderer.domElement);
 
-        /** @type BlueMapMap */
-        this.map = null;
+        /** @type BlueMapMap[] */
+        this.maps = [];
+        /** @type Map<BlueMapMap> */
+        this.mapsMap = new Map();
 
         this.dataUrl = "https://ppg.cdn.nnmod.com/maps/";
 
@@ -60,7 +62,8 @@ export class BlueMapApp {
                 invertMouse: false,
                 enableFreeFlight: isFreeFightModeEnable,
                 pauseTileLoading: false
-            }
+            },
+            maps: []
         });
 
         // popup on click
@@ -82,6 +85,14 @@ export class BlueMapApp {
      * @returns {Promise<void|never>}
      */
     async load() {
+        let oldMaps = this.maps;
+        this.maps = [];
+        this.appState.maps.splice(0, this.appState.maps.length);
+        this.mapsMap.clear();
+
+        await this.mapViewer.switchMap(null);
+        oldMaps.forEach(map => map.dispose());
+        
         if(this.updateLoop) clearTimeout(this.updateLoop);
         this.updateLoop = setTimeout(this.update, 1000);
     }
@@ -94,8 +105,10 @@ export class BlueMapApp {
     async switchMap(mapId, resetCamera = true) {
         let map = await this.loadMap(mapId);
         if (!map) return Promise.reject(`There is no map with the id "${mapId}" loaded!`);
+        this.mapsMap.set(map.data.id, map);
+        this.appState.maps.push(map.data);
 
-        await this.mapViewer.switchMap(map)
+        await this.mapViewer.switchMap(map);
 
         if (resetCamera) this.resetCamera();
     }
@@ -126,7 +139,6 @@ export class BlueMapApp {
             .catch(error => {
                 alert(this.events, `Failed to load settings for map '${map.data.id}':` + error, "warning");
             });
-
         return map;
     }
 

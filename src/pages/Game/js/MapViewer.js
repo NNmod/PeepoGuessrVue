@@ -22,7 +22,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+/* eslint-disable */
 import {Color, PerspectiveCamera, Raycaster, Vector2, WebGLRenderer} from "three";
+import {Map} from "./map/Map";
 import {SkyboxScene} from "./skybox/SkyboxScene";
 import {ControlsManager} from "./controls/ControlsManager";
 import {dispatchEvent, elementOffset, generateCacheHash, htmlToElement} from "./util/Utils";
@@ -71,7 +73,7 @@ export class MapViewer {
 			superSampling: 1,
 			loadedCenter: new Vector2(0, 0),
 			loadedHiresViewDistance: 100,
-			loadedLowresViewDistance: 600,
+			loadedLowresViewDistance: 1200,
 		});
 
 		this.tileCacheHash = generateCacheHash();
@@ -228,6 +230,7 @@ export class MapViewer {
 			});
 		}
 	}
+
 
 	/**
 	 * @private

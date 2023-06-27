@@ -4,7 +4,7 @@ import {htmlToElement} from "../util/Utils";
 
 export class GuessMarker extends Marker {
 
-    constructor(id, appState, position, link, isOrigin = false) {
+    constructor(id, appState, link, isOrigin = false) {
         super(id);
 
         this.data.type = "popup";
@@ -12,7 +12,7 @@ export class GuessMarker extends Marker {
         this.data.listed = false;
 
         this.appState = appState;
-        this.visible = true;
+        this.visible = false;
 
         let width = 48;
         let height = 56;
@@ -31,15 +31,27 @@ export class GuessMarker extends Marker {
                             style="position: absolute; top: 0; left: 0; height: 100%; object-fit: cover; object-position: center;">
                     </div>
                 </div>`));
-        this.elementObject.position.set(position.x, 1, position.y);
+        this.elementObject.position.set(0.5, 1, 0.5);
         
         this.add(this.elementObject);
+        this.close();
     }
 
     onClick() {
         return true;
     }
 
+    open(position) {
+        this.elementObject.position.set(position.x, 1, position.y);
+        this.visible = true;
+        this.elementObject.element.style.opacity = "1";
+    }
+
+    close() {
+        this.visible = false;
+        this.elementObject.element.style.opacity = "0";
+    }
+    
     /**
      * @returns {Element}
      */

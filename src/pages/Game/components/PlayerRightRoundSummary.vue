@@ -9,11 +9,12 @@
             <div class="left-chevron-fade lcf-0"></div>
             <div class="left-chevron-fade lcf-1"></div>
             <div class="left-chevron-fade lcf-2"></div>
+            <span id="damage" v-bind:class="isDamageUpdating ? 'fade-in' : 'fade-out'">-{{ damage }}</span>
         </div>
         <div id="avatar-holder">
             <img id="avatar" :src="url">
             <img id="avatar-border" :src="'https://ppg.cdn.nnmod.com/assets/borders/divisions/' + divisionId + '.png'">
-            <span id="health">{{ score }}</span>
+            <span id="health" v-bind:class="isHealthUpdating ? 'zoom-in' : 'zoom-out'">{{ score }}</span>
         </div>
     </div>
 </template>
@@ -24,6 +25,9 @@ export default {
     props: {
         url: String,
         score: Number,
+        isDamageUpdating: Boolean,
+        isHealthUpdating: Boolean,
+        damage: Number,
         name: String,
         divisionId: Number
     }
@@ -31,6 +35,24 @@ export default {
 </script>
 
 <style scoped>
+
+.fade-in {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.fade-out {
+    opacity: 0;
+    transform: translateX(25%);
+}
+
+.zoom-in {
+    font-size: 2vh;
+}
+
+.zoom-out {
+    font-size: 1.5vh;
+}
 
 #player-holder {
     position: absolute;
@@ -83,14 +105,30 @@ export default {
     height: 100%;
     width: 100%;
     font-family: "Futura PT Heavy", sans-serif;
-    font-size: 1.5vh;
     text-align: center;
     margin-top: 75%;
     color: white;
     text-shadow: black 0 4px 8px;
+    transition: 0.32s ease-in-out;
+}
+
+#damage {
+    z-index: 100;
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    font-family: "Futura PT Heavy", sans-serif;
+    font-size: 1.5vh;
+    text-align: center;
+    color: white;
+    margin-top: 24%;
+    text-shadow: black 0 4px 8px;
+    transition: 0.32s ease-in-out;
 }
 
 #chevrons-holder {
+    position: relative;
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -127,12 +165,21 @@ export default {
     max-width: 344px;
     font-family: "Futura PT Heavy", sans-serif;
     font-size: 2vh;
+    text-align: center;
     white-space: nowrap;
     color: black;
     overflow:hidden;
 }
 
 @media (min-width: 768px) {
+    .zoom-in {
+        font-size: 2.5vh;
+    }
+
+    .zoom-out {
+        font-size: 2vh;
+    }
+
     #player-holder {
         right: 8px;
         top: 8px;
@@ -148,7 +195,6 @@ export default {
 
     #health {
         margin-top: 80%;
-        font-size: 2vh;
     }
 
     #name {

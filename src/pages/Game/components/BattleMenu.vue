@@ -3,7 +3,7 @@
         <div id="avatar-holder">
             <img id="avatar" src="../assets/ppg-bg.jpg">
             <img id="avatar-border" src="../assets/ppg-border.png">
-            <span id="round">{{ roundDurationMinutes }}:<div v-if="roundDurationSeconds < 10">0</div>{{ roundDurationSeconds }}</span>
+            <span id="clock" v-bind:class="isLastSeconds ? 'zoom-in' : 'zoom-out'">{{ roundDurationMinutes }}:<div v-if="roundDurationSeconds < 10">0</div>{{ roundDurationSeconds }}</span>
             <span id="health">x{{ multiplier }}</span>
         </div>
     </div>
@@ -15,12 +15,22 @@ export default {
     props: {
         roundDurationMinutes: Number,
         roundDurationSeconds: Number,
+        isLastSeconds: Boolean,
         multiplier: Number
     }
 }
 </script>
 
 <style scoped>
+.zoom-in {
+    font-size: 2.75vh;
+    color: red;
+}
+
+.zoom-out {
+    font-size: 2.25vh;
+    color: white;
+}
 
 #player-holder {
     position: absolute;
@@ -66,7 +76,7 @@ export default {
     object-position: center;
 }
 
-#round {
+#clock {
     z-index: 100;
     position: absolute;
     top: 0;
@@ -77,9 +87,8 @@ export default {
     height: 100%;
     width: 100%;
     font-family: "Futura PT Heavy", sans-serif;
-    font-size: 2.25vh;
-    color: white;
     text-shadow: black 0 4px 6px;
+    transition: 0.32s ease-in-out;
 }
 
 #health {
@@ -104,6 +113,14 @@ export default {
 }
 
 @media (min-width: 768px) {
+    .zoom-in {
+        font-size: 3.3vh;
+    }
+
+    .zoom-out {
+        font-size: 2.8vh;
+    }
+    
     #player-holder {
         top: 8px;
         height: 10vh;
@@ -114,10 +131,6 @@ export default {
     #avatar-holder {
         height: 10vh;
         width: calc(8vh * 1.1);
-    }
-
-    #round {
-        font-size: 2.8vh;
     }
     
     #health {
