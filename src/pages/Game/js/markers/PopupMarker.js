@@ -81,6 +81,11 @@ export class PopupMarker extends Marker {
         console.log(this.position);
         this.open();
     };
+    
+    set(position) {
+        this.position.set(position.x, 1, position.y);
+        this.guessPosition = new Vector2(this.position.x, this.position.z);
+    }
 
     open() {
         this.visible = true;

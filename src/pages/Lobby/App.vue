@@ -4,10 +4,17 @@
         <Logo/>
         <div id="menu-holder">
             <div id="menu-title">
-                <div>Searching the game</div>
+                <div v-if="lobby.isDelayed">Searching delayed. The server is full. Please wait</div>
+                <div v-else-if="redirectGame !== null">Searching canceled. You already have active game</div>
+                <div v-else>Searching the game</div>
             </div>
             <div v-if="lobby.isDelayed">
                 
+            </div>
+            <div v-else-if="redirectGame !== null">
+                <div class="headline-holder">
+                    <a class="headline-flash" :href="'https://ppg.nnmod.com/game.html?code=' + this.redirectGame.gameCode">{{ $t('home.menu.comeback') }}</a>
+                </div>
             </div>
             <div v-else>
                 <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
@@ -30,9 +37,11 @@ export default {
     },
     data() {
         return {
+            signalr: null,
             lobby: {
                 isDelayed: false
             },
+            redirectGame: null,
             enemy: null
         }
     },
@@ -43,23 +52,59 @@ export default {
         enemyFound(value) {
             this.enemy = value;
         },
+        redirectToGame(value) {
+            this.redirectGame = value;
+            this.countdownComeback();
+        },
         gameFound(value) {
-            console.log(value);
             location.replace('https://ppg.nnmod.com/game.html?code=' + value.code);
+        },
+        countdownComeback() {
+            let x = setInterval(async () => {
+                let distance = new Date(this.redirectGame.gameExpire).getTime() - new Date().getTime();
+
+                if (distance < 0) {
+                    this.redirectGame = null;
+                    clearInterval(x);
+                    this.signalr.connection.start().catch();
+                }
+            }, 1000)
         }
     },
     mounted() {
-        const signalr = useSignalR();
-        signalr.connection.onclose(() => this.connectionError());
-        signalr.on('Error', () => this.error());
-        signalr.on('EnemyRevoke', () => this.enemyRevoke());
-        signalr.on('EnemyFound', value => this.enemyFound(value));
-        signalr.on('GameFound', value => this.gameFound(value));
+        this.signalr = useSignalR();
+        this.signalr.connection.onclose(() => this.connectionError());
+        this.signalr.on('Error', () => this.error());
+        this.signalr.on('EnemyRevoke', () => this.enemyRevoke());
+        this.signalr.on('EnemyFound', value => this.enemyFound(value));
+        this.signalr.on('RedirectToGame', value => this.redirectToGame(value));
+        this.signalr.on('GameFound', value => this.gameFound(value));
     }
 }
 </script>
 
 <style>
+.headline-holder {
+    display: block;
+    height: 6vh;
+    justify-items: center;
+    align-items: center;
+}
+
+.headline-flash {
+    font-family: "Futura PT Heavy", sans-serif;
+    font-size: 3vh;
+    text-shadow: black 0 0 0;
+    transition: 0.16s ease-in;
+    animation: blinkColor 2s ease-in-out infinite;
+}
+
+.headline-flash:hover {
+    font-size: 3.2vh;
+    text-shadow: black 0 0.75vh 8px;
+    transition: 0.16s ease-out;
+}
+
 #app {
     font-family: "Futura PT Heavy", sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -91,9 +136,29 @@ export default {
 }
 
 @media (min-width: 768px) {
+    .headline-holder {
+        height: 8vh;
+    }
+    
+    .headline-flash {
+        font-size: 5vh;
+    }
+
+    .headline-flash:hover {
+        font-size: 5.2vh;
+        text-shadow: black 0 0.75vh 8px;
+        transition: 0.16s ease-out;
+    }
+    
     #menu-holder {
         margin-top: 5vh;
     }
+}
+
+@keyframes blinkColor{
+    0%{color: white;}
+    50%{color: red;}
+    100%{color: white;}
 }
 
 .lds-ellipsis {

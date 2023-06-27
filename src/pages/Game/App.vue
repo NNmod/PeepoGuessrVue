@@ -46,7 +46,7 @@
             <div class="main-holder">
                 <Logo/>
                 <div class="menu-holder">
-                    Unexpected error happened. Be sure that this game exists.
+                    <div class="headline-holder">Unexpected error happened. Be sure that this game exists and you have not another working game tab.</div>
                 </div>
             </div>
         </div>
@@ -54,7 +54,7 @@
             <div class="main-holder">
                 <Logo/>
                 <div class="menu-holder">
-                    <div class="headline-holder">Waiting for a new round</div>
+                    <div class="headline-holder">Waiting for loading the game</div>
                     <div class="timer-holder">
                         <div v-if="game.round.delay.seconds <= 0">
                             <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
