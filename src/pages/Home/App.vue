@@ -4,6 +4,9 @@
         <Logo/>
         <div id="menu-holder">
             <div v-if="account.isLoaded">
+                <div class="headline-holder" v-if="this.account.data.gameCode">
+                    <a class="headline-flash" :href="'https://ppg.nnmod.com/game.html?code=' + this.account.data.gameCode">{{ $t('home.menu.comeback') }}</a>
+                </div>
                 <div class="headline-holder">
                     <a class="headline" href="https://ppg.nnmod.com/lobby.html?type=singleplayer">{{ $t('home.menu.single') }}</a>
                 </div>
@@ -79,7 +82,9 @@ export default {
                     twitchName: '',
                     imageUrl: '',
                     divisionId: 1,
-                    score: 0
+                    score: 0,
+                    gameCode: null,
+                    gameExpire: null
                 }
             }
         }
@@ -92,6 +97,8 @@ export default {
                     this.account.isLoaded = true;
                     this.account.isAuthorize = true;
                     this.account.data = data;
+                    if (this.account.data.gameExpire) 
+                        this.countdownComeback();
                 })
                 .catch(() => {
                     this.account.isLoaded = true;
@@ -100,7 +107,9 @@ export default {
                         twitchName: '',
                         imageUrl: '',
                         divisionId: 1,
-                        score: 0
+                        score: 0,
+                        gameCode: null,
+                        gameExpire: null
                     };
                 })
         },
@@ -117,6 +126,17 @@ export default {
                     }
                 }
             });
+        },
+        countdownComeback() {
+            let x = setInterval(async () => {
+                let distance = new Date(this.account.data.gameExpire).getTime() - new Date().getTime();
+
+                if (distance < 0) {
+                    this.account.data.gameCode = null;
+                    this.account.data.gameExpire = null;
+                    clearInterval(x);
+                }
+            }, 1000)
         },
         centerWindow(w, h) {
             const dualScreenLeft = window.screenLeft !==  undefined ? window.screenLeft : window.screenX;
@@ -217,6 +237,20 @@ export default {
     align-items: center;
 }
 
+.headline-flash {
+    font-family: "Futura PT Heavy", sans-serif;
+    font-size: 3vh;
+    text-shadow: black 0 0 0;
+    transition: 0.16s ease-in;
+    animation: blinkColor 2s ease-in-out infinite;
+}
+
+.headline-flash:hover {
+    font-size: 3.2vh;
+    text-shadow: black 0 0.75vh 8px;
+    transition: 0.16s ease-out;
+}
+
 .headline {
     font-family: "Futura PT Heavy", sans-serif;
     font-size: 3vh;
@@ -257,6 +291,16 @@ export default {
         height: 8vh;
     }
 
+    .headline-flash {
+        font-size: 5vh;
+    }
+
+    .headline-flash:hover {
+        font-size: 5.2vh;
+        text-shadow: black 0 0.75vh 8px;
+        transition: 0.16s ease-out;
+    }
+    
     .headline {
         font-size: 5vh;
     }
@@ -304,6 +348,12 @@ export default {
         margin-left: 4px;
         margin-right: 4px;
     }
+}
+
+@keyframes blinkColor{
+    0%{color: white;}
+    50%{color: red;}
+    100%{color: white;}
 }
 
 .lds-ellipsis {
