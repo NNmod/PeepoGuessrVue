@@ -8,12 +8,12 @@
                 <div v-else-if="redirectGame !== null">Searching canceled. You already have active game</div>
                 <div v-else>Searching the game</div>
             </div>
-            <div v-if="lobby.isDelayed">
-                
-            </div>
-            <div v-else-if="redirectGame !== null">
+            <div v-if="redirectGame !== null">
                 <div class="headline-holder">
                     <a class="headline-flash" :href="'https://ppg.nnmod.com/game.html?code=' + this.redirectGame.gameCode">{{ $t('home.menu.comeback') }}</a>
+                </div>
+                <div id="menu-title">
+                    or wait until the game is over
                 </div>
             </div>
             <div v-else>
@@ -76,6 +76,7 @@ export default {
         this.signalr.connection.onclose(() => this.connectionError());
         this.signalr.on('Error', () => this.error());
         this.signalr.on('EnemyRevoke', () => this.enemyRevoke());
+        this.signalr.on('Delayed', () => this.lobby.isDelayed = true);
         this.signalr.on('EnemyFound', value => this.enemyFound(value));
         this.signalr.on('RedirectToGame', value => this.redirectToGame(value));
         this.signalr.on('GameFound', value => this.gameFound(value));
