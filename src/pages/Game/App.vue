@@ -68,8 +68,11 @@
         </div>
         <div v-else-if="game.status === 'summary'">
             <div class="main-holder">
-                <div class="menu-holder">
-                    SUMMARY
+                <div class="menu-holder" v-if="game.users.length > 0">
+                    <div class="headline-holder" v-if="game.users[0].isWinner">{{ $t('game.summary.win') }}</div>
+                    <div class="headline-holder" v-else>{{ $t('game.summary.lose') }}</div>
+                    <PlayerSummaryMain :url="game.users[0].imageUrl" :division-id="game.users[0].divisionId" :score="game.users[0].score"
+                                       :name="game.users[0].name" :wins="game.users[0].wins" :upgrade="game.users[0].upgrade"/>
                 </div>
             </div>
         </div>
@@ -115,6 +118,7 @@ import BattleMenu from "./components/BattleMenu.vue";
 import {useSignalR} from "@quangdao/vue-signalr";
 import PlayerLeftRoundSummary from "./components/PlayerLeftRoundSummary.vue";
 import PlayerRightRoundSummary from "./components/PlayerRightRoundSummary.vue";
+import PlayerSummaryMain from "./components/PlayerSummaryMain.vue";
 import {BlueMapApp} from "@/pages/Game/js/BlueMapApp";
 import {PopupMarker} from "@/pages/Game/js/markers/PopupMarker";
 import {GuessMarker} from "@/pages/Game/js/markers/GuessMarker";
@@ -123,6 +127,7 @@ import {Vector2} from "three";
 export default {
     name: 'App',
     components: {
+        PlayerSummaryMain,
         PlayerRightRoundSummary,
         PlayerLeftRoundSummary,
         Background,
@@ -151,7 +156,6 @@ export default {
                 status: 'prepare',//prepare
                 isCompleted: false,
                 users: [],
-                summaryUsers: [],
                 round: {
                     roundCount: 0,
                     multiplier: 1,
@@ -177,7 +181,11 @@ export default {
                 clock: null,
                 bell: null,
                 hit: null,
-                damage: null
+                damage: null,
+                defeat: null,
+                win: null,
+                promotion: null,
+                demotion: null
             }
         }
     },
@@ -211,17 +219,25 @@ export default {
             console.log(this.game.status);
         },
         completeGame(value) {
-            console.log(this.game.status);
+            console.log(value);
             this.game.round.roundDelay = new Date(value.summaryDelay);
-            this.countdownRoundDelay();
 
             value.users.forEach(userSummary => {
                 console.log(userSummary);
-                if (userSummary.isWinner)
-                    this.game.summaryUsers.unshift(userSummary);
-                else 
-                    this.game.summaryUsers.push(userSummary);
+                this.userSummary(userSummary);
             });
+            this.countdownRoundDelay();
+        },
+        userSummary(value) {
+            const user = this.game.users.find((o) => o.userId === value.userId);
+            user.divisionId = value.divisionId;
+            user.isWinner = value.isWinner;
+            user.isDivisionPromoted = value.isDivisionPromoted;
+            user.isDivisionDemoted = value.isDivisionDemoted;
+            user.score = value.oldScore;
+            user.newScore = value.score;
+            user.wins = value.wins;
+            user.upgrade = value.upgrade;
         },
         async completeRound(value) {
             this.game.isCompleted = value.isGameCompleted;
@@ -243,13 +259,6 @@ export default {
             value.users.forEach(userSummary => {
                 console.log(userSummary);
                 this.userRoundSummary(userSummary);
-                const user = this.game.users.find((o) => o.userId === userSummary.userId);
-                if (userSummary.posX && userSummary.posY) {
-                    user.guessMarker.open(new Vector2(userSummary.posX, userSummary.posY));
-                }
-                else {
-                    user.guessMarker.close();
-                }
             });
         },
         userRoundSummary(value) {
@@ -257,6 +266,12 @@ export default {
             user.isDamageUpdating = true;
             user.damage = Math.floor(value.distance);
             this.updateDamage(user, Math.floor(value.distance), value.damage, user.health, value.health);
+            if (value.posX && value.posY) {
+                user.guessMarker.open(new Vector2(value.posX, value.posY));
+            }
+            else {
+                user.guessMarker.close();
+            }
         },
         async newRound(value) {
             console.log(value);
@@ -338,10 +353,31 @@ export default {
 
                 if (distance < 0) {
                     this.game.round.delay.seconds = 0;
-                    if (this.game.isCompleted)
+                    if (this.game.isCompleted) {
                         this.game.status = 'summary';
+                        if (this.game.users.length > 0)
+                            this.updateScore(this.game.users[0], this.game.users[0].score, this.game.users[0].newScore);
+                        if (this.game.users.length > 0 && this.game.users[0].isWinner) {
+                            if (this.audios.win)
+                                this.audios.win.play().catch(() => { });
+                        }
+                        else {
+                            if (this.audios.defeat)
+                                this.audios.defeat.play().catch(() => { });
+                        }
+
+                        if (this.game.users.length > 0 && this.game.users[0].isDivisionPromoted) {
+                            if (this.audios.promotion)
+                                this.audios.promotion.play().catch(() => { });
+                        }
+                        else if (this.game.users.length > 0 && this.game.users[0].isDivisionDemoted) {
+                            if (this.audios.demotion)
+                                this.audios.demotion.play().catch(() => { });
+                        }
+                    }
                     else
                         this.game.status = 'round';
+                    
                     console.log(this.game.status);
                     clearInterval(x);
                     this.guessOriginMarker.close();
@@ -403,7 +439,7 @@ export default {
                     user.damage = end;
                     user.isDamageUpdating = false;
                     user.isHealthUpdating = true;
-                    this.updateScore(user, scoreStart, scoreEnd);
+                    this.updateHealth(user, scoreStart, scoreEnd);
                     if (this.audios.hit) {
                         this.audios.hit.pause();
                         this.audios.hit.currentTime = 0;
@@ -412,7 +448,7 @@ export default {
             };
             window.requestAnimationFrame(step);
         },
-        updateScore(user, start, end) {
+        updateHealth(user, start, end) {
             if (!this.game.roundSummary.isDamageAudioPlayed) {
                 this.game.roundSummary.isDamageAudioPlayed = true;
                 if (this.audios.damage)
@@ -438,6 +474,22 @@ export default {
                 }
             };
             window.requestAnimationFrame(step);
+        },
+        updateScore(user, start, end) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / 1600, 1);
+                user.score = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+                else {
+                    user.score = end;
+                    user.isScoreUpdating = false;
+                }
+            };
+            window.requestAnimationFrame(step);
         }
     },
     async mounted() {
@@ -459,6 +511,14 @@ export default {
         this.audios.hit.loop = false;
         this.audios.damage = new Audio('https://ppg.cdn.nnmod.com/assets/audios/summary/round/damage.mp3');
         this.audios.damage.loop = false;
+        this.audios.defeat = new Audio('https://ppg.cdn.nnmod.com/assets/audios/summary/defeat2.mp3');
+        this.audios.defeat.loop = false;
+        this.audios.win = new Audio('https://ppg.cdn.nnmod.com/assets/audios/summary/win.mp3');
+        this.audios.win.loop = false;
+        this.audios.promotion = new Audio('https://ppg.cdn.nnmod.com/assets/audios/summary/division/promoted.mp3');
+        this.audios.promotion.loop = false;
+        this.audios.demotion = new Audio('https://ppg.cdn.nnmod.com/assets/audios/summary/division/demoted.mp3');
+        this.audios.demotion.loop = false;
         
         const playMap = new BlueMapApp(document.getElementById("free-map-holder"), true);
         this.playMap = playMap;

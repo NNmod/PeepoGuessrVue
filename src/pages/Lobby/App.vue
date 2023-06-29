@@ -4,8 +4,9 @@
         <Logo/>
         <div id="menu-holder">
             <div id="menu-title">
-                <div v-if="lobby.isDelayed">Searching delayed. The server is full. Please wait</div>
-                <div v-else-if="redirectGame !== null">Searching canceled. You already have active game</div>
+                <div v-if="redirectGame !== null">Searching canceled. You already have active game</div>
+                <div v-else-if="lobby.isMatchmakingTrouble">Something went wrong. Wait while we try next time or come back later</div>
+                <div v-else-if="lobby.isDelayed">Searching delayed. The server is full. Please wait</div>
                 <div v-else>Searching the game</div>
             </div>
             <div v-if="redirectGame !== null">
@@ -39,7 +40,8 @@ export default {
         return {
             signalr: null,
             lobby: {
-                isDelayed: false
+                isDelayed: false,
+                isMatchmakingTrouble: false,
             },
             redirectGame: null,
             enemy: null
@@ -77,6 +79,7 @@ export default {
         this.signalr.on('Error', () => this.error());
         this.signalr.on('EnemyRevoke', () => this.enemyRevoke());
         this.signalr.on('Delayed', () => this.lobby.isDelayed = true);
+        this.signalr.on('MatchmakingTrouble', () => this.lobby.isMatchmakingTrouble = true);
         this.signalr.on('EnemyFound', value => this.enemyFound(value));
         this.signalr.on('RedirectToGame', value => this.redirectToGame(value));
         this.signalr.on('GameFound', value => this.gameFound(value));
