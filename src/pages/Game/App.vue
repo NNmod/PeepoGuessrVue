@@ -17,7 +17,7 @@
                     <button id="guess-button" v-if="game.users.length > 0 && game.users[0].guessLeft > 0 && guessMarker !== null && guessMarker.guessPosition !== null"
                     @click="guess">
                         <div v-if="guessProcess" class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
-                        <div v-else>Accept Guess</div>
+                        <div v-else>{{ $t('game.acceptGuess') }}</div>
                     </button>
                 </div>
             </div>
@@ -25,7 +25,7 @@
     </div>
     <div id="low-holder">
         <div id="second-menu-holder">
-            <button class="button" @click="toSpawn">return to spawn</button>
+            <button class="button" @click="toSpawn">{{ $t('game.returnToSpawn') }}</button>
             <button class="button">{{ $t('home.secondMenu.settings') }}</button>
         </div>
     </div>
@@ -46,7 +46,7 @@
             <div class="main-holder">
                 <Logo/>
                 <div class="menu-holder">
-                    <div class="headline-holder">Unexpected error happened. Be sure that this game exists and you have not another working game tab.</div>
+                    <div class="headline-holder">{{ $t('game.error') }}</div>
                 </div>
             </div>
         </div>
@@ -54,7 +54,7 @@
             <div class="main-holder">
                 <Logo/>
                 <div class="menu-holder">
-                    <div class="headline-holder">Waiting for loading the game</div>
+                    <div class="headline-holder">{{ $t('game.loading') }}</div>
                     <div class="timer-holder">
                         <div v-if="game.round.delay.seconds <= 0">
                             <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
@@ -69,8 +69,8 @@
         <div v-else-if="game.status === 'summary'">
             <div class="main-holder">
                 <div class="menu-holder" v-if="game.users.length > 0">
-                    <div class="headline-holder" v-if="game.users[0].isWinner">{{ $t('game.summary.win') }}</div>
-                    <div class="headline-holder" v-else>{{ $t('game.summary.lose') }}</div>
+                    <div id="summary-title" v-if="game.users[0].isWinner">{{ $t('game.summary.win') }}</div>
+                    <div id="summary-title" v-else>{{ $t('game.summary.lose') }}</div>
                     <PlayerSummaryMain :url="game.users[0].imageUrl" :division-id="game.users[0].divisionId" :score="game.users[0].score"
                                        :name="game.users[0].name" :wins="game.users[0].wins" :upgrade="game.users[0].upgrade"/>
                 </div>
@@ -80,8 +80,8 @@
     <div id="round-summary" v-bind:class="game.status === 'roundSummary' ? 'visibility-opened' : 'visibility-closed'">
         <Background/>
         <div class="main-holder">
-            <div class="menu-holder">
-                <div id="round-summary-title">Round {{ game.roundSummary.roundCount }}</div>
+            <div id="round-summary-menu" class="menu-holder">
+                <div id="round-summary-title">{{ $t('game.roundSummary.round') }} {{ game.roundSummary.roundCount }}</div>
                 <div id="round-summary-holder">
                     <div id="round-summary-map-holder"></div>
                 </div>
@@ -93,8 +93,8 @@
                                              :is-damage-updating="game.users[1].isDamageUpdating" :is-health-updating="game.users[1].isHealthUpdating"
                                              :division-id="game.users[1].divisionId" :url="game.users[1].imageUrl"/>
                 </div>
-                <div class="headline-holder" v-if="this.game.isCompleted">Game summary in</div>
-                <div class="headline-holder" v-else>Next round in</div>
+                <div class="headline-holder" v-if="this.game.isCompleted">{{ $t('game.roundSummary.gameSummary') }}</div>
+                <div class="headline-holder" v-else>{{ $t('game.roundSummary.nextRound') }}</div>
                 <div class="timer-holder">
                     <div v-if="game.round.delay.seconds <= 0">
                         <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
@@ -572,7 +572,7 @@ export default {
 }
 
 .visibility-closed {
-    transform: translateY(100%);
+    transform: translateY(120%);
 }
 
 .main-holder {
@@ -604,9 +604,13 @@ export default {
 
 .headline-holder {
     display: block;
-    font-size: 32px;
+    font-size: 24px;
+    line-height: 24px;
     justify-items: center;
     align-items: center;
+    padding-left: 2%;
+    padding-right: 2%;
+    text-align: center;
 }
 
 #guess-button {
@@ -634,20 +638,28 @@ export default {
     justify-content: center;
 }
 
+#round-summary-menu {
+    padding-top: 8vh;
+}
+
 #round-summary-holder {
     display: flex;
-    width: 68vw;
-    height: 68vh;
-    //background: white;
+    width: 100vw;
+    height: 70vh;
 }
 
 #round-summary-map-holder {
-    margin: 2%;
+    margin: 4% 2%;
     width: 100%;
 }
 
 #round-summary-title {
     font-size: 48px;
+    margin: 2%;
+}
+
+#summary-title {
+    font-size: 40px;
     margin: 2%;
 }
 
@@ -668,22 +680,22 @@ export default {
     display: flex;
     flex-direction: column;
     position: absolute;
-    width: auto;
+    width: 100%;
     bottom: 8px;
     justify-content: end;
 }
 
 #second-menu-holder {
-    margin-left: 8px;
+    margin-bottom: 1.5rem;
     display: flex;
-    flex-direction: column;
 }
 
 .button {
+    flex-grow: 1;
     border: solid white;
     border-radius: 12px;
-    margin-top: 2px;
-    margin-bottom: 2px;
+    margin-left: 4px;
+    margin-right: 4px;
     padding: 6px 12px 6px 12px;
     color: white;
     box-shadow: black 0 0 0;
@@ -697,8 +709,29 @@ export default {
 }
 
 @media (min-width: 1024px) {
+    .headline-holder {
+        font-size: 32px;
+    }
+    
     #guess-button {
         margin: 8px 8px 8px calc(1.5rem + 4px);
+    }
+
+    #round-summary-menu {
+        padding-top: 0;
+    }
+    
+    #round-summary-holder {
+        width: 68vw;
+        height: 68vh;
+    }
+
+    #round-summary-map-holder {
+        margin: 2%;
+    }
+
+    #summary-title {
+        font-size: 64px;
     }
     
     #low-holder {
@@ -709,12 +742,17 @@ export default {
 
     #second-menu-holder {
         margin-left: 4px;
-        flex-direction: row;
+        margin-bottom: 0;
     }
 
     .button {
+        border: solid white;
+        border-radius: 12px;
         margin-left: 4px;
         margin-right: 4px;
+        padding: 6px 12px 6px 12px;
+        color: white;
+        box-shadow: black 0 0 0;
     }
 }
 

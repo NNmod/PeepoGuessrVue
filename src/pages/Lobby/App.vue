@@ -4,17 +4,17 @@
         <Logo/>
         <div id="menu-holder">
             <div id="menu-title">
-                <div v-if="redirectGame !== null">Searching canceled. You already have active game</div>
-                <div v-else-if="lobby.isMatchmakingTrouble">Something went wrong. Wait while we try next time or come back later</div>
-                <div v-else-if="lobby.isDelayed">Searching delayed. The server is full. Please wait</div>
-                <div v-else>Searching the game</div>
+                <div v-if="redirectGame !== null">{{ $t('lobby.redirect') }}</div>
+                <div v-else-if="lobby.isMatchmakingTrouble">{{ $t('lobby.trouble') }}</div>
+                <div v-else-if="lobby.isDelayed">{{ $t('lobby.delayed') }}</div>
+                <div v-else>{{ $t('lobby.searching') }}</div>
             </div>
             <div v-if="redirectGame !== null">
                 <div class="headline-holder">
                     <a class="headline-flash" :href="'https://ppg.nnmod.com/game.html?code=' + this.redirectGame.gameCode">{{ $t('home.menu.comeback') }}</a>
                 </div>
                 <div id="menu-title">
-                    or wait until the game is over
+                    {{ $t('lobby.untilOver') }}
                 </div>
             </div>
             <div v-else>

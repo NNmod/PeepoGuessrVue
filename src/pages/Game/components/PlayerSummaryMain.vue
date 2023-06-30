@@ -11,7 +11,7 @@
         <div id="avatar-holder">
             <img id="avatar" :src="url">
             <img id="avatar-border" :src="'https://ppg.cdn.nnmod.com/assets/borders/divisions/' + divisionId + '.png'">
-            <span id="score" v-bind:class="isScoreUpdate ? 'zoom-in' : 'zoom-out'">{{ score }}</span>
+            <span id="score">{{ score }}</span>
         </div>
         <div id="right-chevron-holder">
             <div id="stats-holder">
@@ -32,22 +32,12 @@ export default {
         divisionId: Number,
         score: Number,
         wins: Number,
-        upgrade: Number,
-        isScoreUpdate: Boolean
+        upgrade: Number
     }
 }
 </script>
 
 <style scoped>
-
-.zoom-in {
-    font-size: 2.8vh;
-}
-
-.zoom-out {
-    font-size: 2.4vh;
-}
-
 #holder {
     display: flex;
     right: 8px;
@@ -127,7 +117,7 @@ export default {
     margin-top: 24%;
     margin-left: auto;
     margin-right: 0;
-    clip-path: polygon(0 0, 100% 0%, 100% 100%, 32px 100%);
+    clip-path: polygon(0 0, 100% 0%, 100% 100%, 12px 100%);
     box-shadow: #e9f1f1 0 0 72px 12px;
 }
 
@@ -173,38 +163,30 @@ export default {
 }
 
 #lcf-0 {
-    margin-left: 36px;
+    margin-left: 12px;
     opacity: 96%;
     height: 6%;
-    clip-path: polygon(0 0, 100% 0%, 100% 100%, 8px 100%);
+    clip-path: polygon(0 0, 100% 0%, 100% 100%, 4px 100%);
     animation: fadeInChevron0 8s ease-in 0.3s, blinkChevron0 3s ease-in-out infinite;
 }
 
 #lcf-1 {
-    margin-left: 48px;
+    margin-left: 16px;
     opacity: 64%;
     height: 4%;
-    clip-path: polygon(0 0, 100% 0%, 100% 100%, 6px 100%);
+    clip-path: polygon(0 0, 100% 0%, 100% 100%, 3px 100%);
     animation: fadeInChevron1 8s ease-in 0.3s, blinkChevron1 3s ease-in-out infinite;
 }
 
 #lcf-2 {
-    margin-left: 58px;
+    margin-left: 19px;
     opacity: 32%;
     height: 2%;
-    clip-path: polygon(0 0, 100% 0%, 100% 100%, 3px 100%);
+    clip-path: polygon(0 0, 100% 0%, 100% 100%, 2px 100%);
     animation: fadeInChevron2 8s ease-in 0.3s, blinkChevron2 3s ease-in-out infinite;
 }
 
 @media (min-width: 768px) {
-    .zoom-in {
-        font-size: 4.8vh;
-    }
-
-    .zoom-out {
-        font-size: 4.4vh;
-    }
-    
     #holder {
         height: 24vh;
         width: calc(24vh / 2 * 7);
@@ -235,14 +217,6 @@ export default {
 }
 
 @media (min-width: 1024px) {
-    .zoom-in {
-        font-size: 5.8vh;
-    }
-
-    .zoom-out {
-        font-size: 5.4vh;
-    }
-    
     #holder {
         height: 32vh;
         width: calc(32vh / 2 * 7);
@@ -269,6 +243,25 @@ export default {
         width: calc((32vh / 2 * 7 - 32vh) / 2);
         font-size: 5vh;
         line-height: 5vh;
+    }
+    
+    #name-holder {
+        clip-path: polygon(0 0, 100% 0%, 100% 100%, 32px 100%);
+    }
+
+    #lcf-0 {
+        margin-left: 36px;
+        clip-path: polygon(0 0, 100% 0%, 100% 100%, 8px 100%);
+    }
+
+    #lcf-1 {
+        margin-left: 48px;
+        clip-path: polygon(0 0, 100% 0%, 100% 100%, 6px 100%);
+    }
+
+    #lcf-2 {
+        margin-left: 58px;
+        clip-path: polygon(0 0, 100% 0%, 100% 100%, 3px 100%);
     }
 }
 

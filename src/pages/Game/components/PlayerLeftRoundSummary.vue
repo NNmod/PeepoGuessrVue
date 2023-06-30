@@ -59,8 +59,8 @@ export default {
     position: absolute;
     display: flex;
     left: 2px;
-    bottom: 0;
-    transform: translateY(68vh);
+    top: 8px;
+    transform: translateY(76vh);
     height: 6vh;
     max-height: 140px;
     width: calc(6vh / 2 * 7);
@@ -185,6 +185,7 @@ export default {
     #player-holder {
         left: 8px;
         top: 8px;
+        transform: translateY(68vh);
         height: 8vh;
         width: calc(8vh / 2 * 7);
         transition: 0.16s ease-in-out;

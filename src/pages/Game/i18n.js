@@ -1,6 +1,6 @@
 import {createI18n} from 'vue-i18n';
 import {nextTick} from "vue";
-import {fetchHocon} from "./js/Utils";
+import parseHocon from "hocon-parser";
 
 export const i18nModule = createI18n({
 	locale: 'none',
@@ -21,8 +21,7 @@ export async function setLanguage(lang) {
 		}
 
 		i18n.locale.value = lang;
-
-		document.querySelector('html').setAttribute('lang', lang);
+		localStorage.setItem('lang', lang);
 	} catch (e) {
 		console.error(`Failed to load language '${lang}'!`, e);
 	}
@@ -33,5 +32,11 @@ export async function setLanguage(lang) {
 export async function loadLanguageSettings() {
 	let settings = await fetchHocon(`./lang/settings.conf`);
 	i18n.languages = settings.languages;
-	await setLanguage(settings.default);
+	await setLanguage(localStorage.getItem('lang') || settings.default);
+}
+
+export const fetchHocon = async (url) => {
+	return fetch(url)
+		.then((res) => res.text())
+		.then((value) => parseHocon(value));
 }
