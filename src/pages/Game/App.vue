@@ -36,9 +36,9 @@
                 :multiplier="game.round.multiplier" :is-last-seconds="game.round.isLastSeconds"/>
     <div v-if="game.users.length < 3">
         <PlayerLeft v-if="game.users.length > 0" :name="game.users[0].name" :score="game.users[0].health" 
-                    :division-id="game.users[0].divisionId" :url="game.users[0].imageUrl"/>
+                    :division-id="game.users[0].divisionId" :url="game.users[0].imageUrl" :is-connected="game.users[0].isConnected"/>
         <PlayerRight v-if="game.users.length > 1" :name="game.users[1].name" :score="game.users[1].health"
-                     :division-id="game.users[1].divisionId" :url="game.users[1].imageUrl"/>  
+                     :division-id="game.users[1].divisionId" :url="game.users[1].imageUrl" :is-connected="game.users[1].isConnected"/>  
     </div>
     <div id="popup-holder" v-if="game.status !== 'round' && game.status !== 'roundSummary'">
         <Background/>
@@ -88,10 +88,10 @@
                 <div v-if="game.users.length < 3">
                     <PlayerLeftRoundSummary v-if="game.users.length > 0" :name="game.users[0].name" :score="game.users[0].health" :damage="game.users[0].damage"
                                             :is-damage-updating="game.users[0].isDamageUpdating" :is-health-updating="game.users[0].isHealthUpdating"
-                                            :division-id="game.users[0].divisionId" :url="game.users[0].imageUrl"/>
+                                            :division-id="game.users[0].divisionId" :url="game.users[0].imageUrl" :is-connected="game.users[0].isConnected"/>
                     <PlayerRightRoundSummary v-if="game.users.length > 1" :name="game.users[1].name" :score="game.users[1].health" :damage="game.users[1].damage"
                                              :is-damage-updating="game.users[1].isDamageUpdating" :is-health-updating="game.users[1].isHealthUpdating"
-                                             :division-id="game.users[1].divisionId" :url="game.users[1].imageUrl"/>
+                                             :division-id="game.users[1].divisionId" :url="game.users[1].imageUrl" :is-connected="game.users[1].isConnected"/>
                 </div>
                 <div class="headline-holder" v-if="this.game.isCompleted">{{ $t('game.roundSummary.gameSummary') }}</div>
                 <div class="headline-holder" v-else>{{ $t('game.roundSummary.nextRound') }}</div>
@@ -334,16 +334,10 @@ export default {
             else 
                 this.game.users.push(value);
         },
-        removeUser(value) {
+        userStatus(value) {
             console.log(value);
-            const user = this.game.users.find((o) => o.connectionId === value);
-            if (user) {
-                this.roundSummaryMap.guessMarkerSet.remove(user.guessMarker);
-                let index = this.game.users.indexOf(user);
-                if (index > -1) {
-                    this.game.users.splice(index, 1);
-                }
-            }
+            const user = this.game.users.find((o) => o.userId === value.userId);
+            user.isConnected = value.isConnected;
         },
         countdownRoundDelay() {
             let x = setInterval(async () => {
@@ -502,7 +496,7 @@ export default {
         this.signalr.on('RoundPromotion', value => this.roundPromotion(value));
         this.signalr.on('UserGuess', value => this.userGuess(value));
         this.signalr.on('NewUser', value => this.newUser(value));
-        this.signalr.on('RemoveUser', value => this.removeUser(value));
+        this.signalr.on('UserStatus', value => this.userStatus(value));
 
         this.audios.clock = new Audio('https://ppg.cdn.nnmod.com/assets/audios/clock.mp3');
         this.audios.clock.loop = false;

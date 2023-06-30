@@ -11,7 +11,7 @@
             <div class="left-chevron-fade lcf-2"></div>
         </div>
         <div id="avatar-holder">
-            <img id="avatar" :src="url">
+            <img id="avatar" v-bind:class="isConnected ? '' : 'disconnected'" :src="url">
             <img id="avatar-border" :src="'https://ppg.cdn.nnmod.com/assets/borders/divisions/' + divisionId + '.png'">
             <span id="health">{{ score }}</span>
         </div>
@@ -25,12 +25,16 @@ export default {
         url: String,
         score: Number,
         name: String,
-        divisionId: Number
+        divisionId: Number,
+        isConnected: Boolean
     }
 }
 </script>
 
 <style scoped>
+.disconnected {
+    filter: grayscale(1);
+}
 
 #player-holder {
     position: absolute;

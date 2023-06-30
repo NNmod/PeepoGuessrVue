@@ -1,7 +1,7 @@
 <template>
     <div id="player-holder">
         <div id="avatar-holder">
-            <img id="avatar" :src="url">
+            <img id="avatar" v-bind:class="isConnected ? '' : 'disconnected'" :src="url">
             <img id="avatar-border" :src="'https://ppg.cdn.nnmod.com/assets/borders/divisions/' + divisionId + '.png'">
             <span id="health" v-bind:class="isHealthUpdating ? 'zoom-in' : 'zoom-out'">{{ score }}</span>
         </div>
@@ -30,12 +30,16 @@ export default {
         isHealthUpdating: Boolean,
         damage: Number,
         name: String,
-        divisionId: Number
+        divisionId: Number,
+        isConnected: Boolean
     }
 }
 </script>
 
 <style scoped>
+.disconnected {
+    filter: grayscale(1);
+}
 
 .fade-in {
     opacity: 1;
