@@ -88,7 +88,6 @@ export default {
     position: absolute;
     top: 0;
     left: 0;
-    height: 100%;
     width: 100%;
     font-family: "Futura PT Heavy", sans-serif;
     text-align: center;

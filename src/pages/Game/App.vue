@@ -73,6 +73,7 @@
                     <div id="summary-title" v-else>{{ $t('game.summary.lose') }}</div>
                     <PlayerSummaryMain :url="game.users[0].imageUrl" :division-id="game.users[0].divisionId" :score="game.users[0].score"
                                        :name="game.users[0].name" :wins="game.users[0].wins" :upgrade="game.users[0].upgrade"/>
+                    <a class="button" href="https://ppg.nnmod.com">{{ $t('game.summary.toMenu') }}</a>
                     <div id="summary-others" v-if="game.users.length > 1">
                         <PlayerSummaryOther :name="game.users[1].name" :division-id="game.users[1].divisionId" 
                                             :score="game.users[1].newScore" :url="game.users[1].imageUrl"/>
