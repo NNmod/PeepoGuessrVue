@@ -20,6 +20,7 @@
             <div v-else>
                 <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
             </div>
+            <a class="button" href="https://ppg.nnmod.com">{{ $t('game.summary.toMenu') }}</a>
         </div>
     </div>
 </template>
@@ -131,12 +132,33 @@ export default {
 #menu-holder {
     display: flex;
     flex-direction: column;
+    justify-items: center;
+    align-items: center;
     margin-top: 5vh;
 }
 
 #menu-title {
     font-size: 28px;
     color: white;
+}
+
+.button {
+    flex-grow: 1;
+    border: solid white;
+    border-radius: 12px;
+    margin-left: 4px;
+    margin-right: 4px;
+    padding: 6px 12px 6px 12px;
+    color: white;
+    max-width: auto;
+    box-shadow: black 0 0 0;
+    transition: 0.16s ease-in;
+}
+
+.button:hover {
+    box-shadow: black 0 4px 8px;
+    background: black;
+    transition: 0.16s ease-out;
 }
 
 @media (min-width: 768px) {
@@ -156,6 +178,19 @@ export default {
     
     #menu-holder {
         margin-top: 5vh;
+    }
+}
+
+@media (min-width: 1024px) {
+    .button {
+        border: solid white;
+        border-radius: 12px;
+        margin-left: 4px;
+        margin-right: 4px;
+        padding: 6px 12px 6px 12px;
+        max-width: 240px;
+        color: white;
+        box-shadow: black 0 0 0;
     }
 }
 

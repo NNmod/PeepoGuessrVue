@@ -219,14 +219,11 @@ export default {
         },
         error() {
             this.game.status = 'error';
-            console.log(this.game.status);
         },
         connectionError() {
             this.game.status = 'error';
-            console.log(this.game.status);
         },
         completeGame(value) {
-            console.log(value);
             this.game.round.roundDelay = new Date(value.summaryDelay);
 
             value.users.forEach(userSummary => {
@@ -261,10 +258,8 @@ export default {
             await this.roundSummaryMap.setFlatView(0);
             await this.roundSummaryMap.mapViewer.controlsManager.position.set(value.posX, 1, value.posY);
             this.guessOriginMarker.open(new Vector2(value.posX, value.posY));
-            console.log(this.game.status);
             
             value.users.forEach(userSummary => {
-                console.log(userSummary);
                 this.userRoundSummary(userSummary);
             });
         },
@@ -281,7 +276,6 @@ export default {
             }
         },
         async newRound(value) {
-            console.log(value);
             this.game.round.roundCount = value.roundCount;
             this.game.round.multiplier = value.multiplier;
             this.game.round.mapUrl = value.mapUrl;
@@ -308,20 +302,17 @@ export default {
             await this.playMap.mapViewer.controlsManager.position.set(this.game.round.posX, 75, this.game.round.posY);
         },
         roundPromotion(value) {
-            console.log(value);
             this.game.round.roundExpire = value.roundExpire;
             if (this.audios.bell)
                 this.audios.bell.cloneNode(true).play().catch(() => {
                 });
         },
         userGuess(value) {
-            console.log(value);
             const user = this.game.users.find((o) => o.userId === value.userId);
             user.guessLeft = value.guessLeft;
             user.guessDistance = value.distance;
         },
         newUser(value) {
-            console.log(value);
             let guessUserMarker = new GuessMarker("bm-guess-origin", this.roundSummaryMap.appState,
                 value.imageUrl);
             value.guessMarker = guessUserMarker;
@@ -342,7 +333,6 @@ export default {
                 this.game.users.push(value);
         },
         userStatus(value) {
-            console.log(value);
             const user = this.game.users.find((o) => o.userId === value.userId);
             user.isConnected = value.isConnected;
         },
@@ -379,7 +369,6 @@ export default {
                     else
                         this.game.status = 'round';
                     
-                    console.log(this.game.status);
                     clearInterval(x);
                     this.guessOriginMarker.close();
                     this.game.users.forEach(user => user.guessMarker.close());
