@@ -8,13 +8,16 @@
                     <a class="headline-flash" :href="'https://ppg.nnmod.com/game.html?code=' + this.account.data.gameCode">{{ $t('home.menu.comeback') }}</a>
                 </div>
                 <div class="headline-holder">
-                    <a class="headline" href="https://ppg.nnmod.com/lobby.html?type=singleplayer">{{ $t('home.menu.single') }}</a>
+                    <a class="headline enabled" href="https://ppg.nnmod.com/lobby.html?type=singleplayer">{{ $t('home.menu.single') }}</a>
                 </div>
                 <div class="headline-holder">
-                    <a class="headline" href="https://ppg.nnmod.com/lobby.html?type=multiplayer">{{ $t('home.menu.multi') }}</a>
+                    <a class="headline enabled" href="https://ppg.nnmod.com/lobby.html?type=multiplayer">{{ $t('home.menu.multi') }}</a>
                 </div>
                 <div class="headline-holder">
-                    <button class="headline">{{ $t('home.menu.party') }}</button>
+                    <button class="headline disabled">{{ $t('home.menu.party') }}</button>
+                </div>
+                <div class="headline-holder">
+                    <button class="headline disabled">{{ $t('home.menu.experiments') }}</button>
                 </div>
             </div>
             <div v-else>
@@ -167,6 +170,14 @@ export default {
     height: 100%;
 }
 
+.enabled {
+    color: white;
+}
+
+.disabled {
+    color: gray;
+}
+
 #main-holder {
     display: flex;
     flex-direction: column;
@@ -254,7 +265,6 @@ export default {
 .headline {
     font-family: "Futura PT Heavy", sans-serif;
     font-size: 3vh;
-    color: white;
     text-shadow: black 0 0 0;
     transition: 0.16s ease-in;
 }

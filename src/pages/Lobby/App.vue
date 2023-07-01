@@ -20,8 +20,10 @@
             <div v-else>
                 <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
             </div>
-            <a class="button" href="https://ppg.nnmod.com">{{ $t('game.summary.toMenu') }}</a>
         </div>
+    </div>
+    <div id="low-holder">
+        <a class="button" href="https://ppg.nnmod.com">{{ $t('game.summary.toMenu') }}</a>
     </div>
 </template>
 
@@ -142,6 +144,15 @@ export default {
     color: white;
 }
 
+#low-holder {
+    z-index: 999;
+    display: flex;
+    position: absolute;
+    width: 100%;
+    bottom: 8px;
+    justify-content: center;
+}
+
 .button {
     flex-grow: 1;
     border: solid white;
@@ -150,7 +161,7 @@ export default {
     margin-right: 4px;
     padding: 6px 12px 6px 12px;
     color: white;
-    max-width: auto;
+    max-width: unset;
     box-shadow: black 0 0 0;
     transition: 0.16s ease-in;
 }

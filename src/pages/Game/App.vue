@@ -73,12 +73,14 @@
                     <div id="summary-title" v-else>{{ $t('game.summary.lose') }}</div>
                     <PlayerSummaryMain :url="game.users[0].imageUrl" :division-id="game.users[0].divisionId" :score="game.users[0].score"
                                        :name="game.users[0].name" :wins="game.users[0].wins" :upgrade="game.users[0].upgrade"/>
-                    <a class="button" href="https://ppg.nnmod.com">{{ $t('game.summary.toMenu') }}</a>
                     <div id="summary-others" v-if="game.users.length > 1">
                         <PlayerSummaryOther :name="game.users[1].name" :division-id="game.users[1].divisionId" 
                                             :score="game.users[1].newScore" :url="game.users[1].imageUrl"/>
                     </div>
                 </div>
+            </div>
+            <div id="low-summary-holder">
+                <a class="button-2" href="https://ppg.nnmod.com">{{ $t('game.summary.toMenu') }}</a>
             </div>
         </div>
     </div>
@@ -536,20 +538,12 @@ export default {
     
   z-index: 100; // put over bluemap markers
 
-  //pointer-events: none;
-
-  font-size: 1rem;
-  @media (max-width: $mobile-break) {
-    font-size: 1.5rem;
-  }
-
   .map-state-message {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     color: var(--theme-fg-light);
-    line-height: 1em;
     text-align: center;
   }
 }
@@ -645,7 +639,8 @@ export default {
 
 #round-summary-title {
     font-size: 48px;
-    margin: 2%;
+    line-height: 32px;
+    margin: 0;
 }
 
 #summary-title {
@@ -685,6 +680,16 @@ export default {
     display: flex;
 }
 
+#low-summary-holder {
+    z-index: 999;
+    display: flex;
+    position: absolute;
+    width: 100%;
+    bottom: 8px;
+    left: 0;
+    justify-content: center;
+}
+
 .button {
     flex-grow: 1;
     border: solid white;
@@ -698,6 +703,27 @@ export default {
 }
 
 .button:hover {
+    box-shadow: black 0 4px 8px;
+    background: black;
+    transition: 0.16s ease-out;
+}
+
+.button-2 {
+    flex-grow: 1;
+    border: solid white;
+    border-radius: 12px;
+    margin-left: 4px;
+    margin-right: 4px;
+    padding: 6px 12px 6px 12px;
+    font-size: 16px;
+    text-align: center;
+    color: white;
+    max-width: unset;
+    box-shadow: black 0 0 0;
+    transition: 0.16s ease-in;
+}
+
+.button-2:hover {
     box-shadow: black 0 4px 8px;
     background: black;
     transition: 0.16s ease-out;
@@ -719,6 +745,10 @@ export default {
     #round-summary-holder {
         width: 68vw;
         height: 68vh;
+    }
+
+    #round-summary-title {
+        margin: 2%;
     }
 
     #round-summary-map-holder {
@@ -743,9 +773,17 @@ export default {
     .button {
         border: solid white;
         border-radius: 12px;
+        color: white;
+        box-shadow: black 0 0 0;
+    }
+
+    .button-2 {
+        border: solid white;
+        border-radius: 12px;
         margin-left: 4px;
         margin-right: 4px;
         padding: 6px 12px 6px 12px;
+        max-width: 240px;
         color: white;
         box-shadow: black 0 0 0;
     }
