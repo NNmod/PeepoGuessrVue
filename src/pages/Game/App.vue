@@ -73,6 +73,10 @@
                     <div id="summary-title" v-else>{{ $t('game.summary.lose') }}</div>
                     <PlayerSummaryMain :url="game.users[0].imageUrl" :division-id="game.users[0].divisionId" :score="game.users[0].score"
                                        :name="game.users[0].name" :wins="game.users[0].wins" :upgrade="game.users[0].upgrade"/>
+                    <div id="summary-others" v-if="game.users.length > 1">
+                        <PlayerSummaryOther :name="game.users[1].name" :division-id="game.users[1].divisionId" 
+                                            :score="game.users[1].newScore" :url="game.users[1].imageUrl"/>
+                    </div>
                 </div>
             </div>
         </div>
@@ -119,6 +123,7 @@ import {useSignalR} from "@quangdao/vue-signalr";
 import PlayerLeftRoundSummary from "./components/PlayerLeftRoundSummary.vue";
 import PlayerRightRoundSummary from "./components/PlayerRightRoundSummary.vue";
 import PlayerSummaryMain from "./components/PlayerSummaryMain.vue";
+import PlayerSummaryOther from "./components/PlayerSummaryOther.vue";
 import {BlueMapApp} from "@/pages/Game/js/BlueMapApp";
 import {PopupMarker} from "@/pages/Game/js/markers/PopupMarker";
 import {GuessMarker} from "@/pages/Game/js/markers/GuessMarker";
@@ -128,6 +133,7 @@ export default {
     name: 'App',
     components: {
         PlayerSummaryMain,
+        PlayerSummaryOther,
         PlayerRightRoundSummary,
         PlayerLeftRoundSummary,
         Background,
@@ -655,6 +661,11 @@ export default {
 #summary-title {
     font-size: 40px;
     margin: 2%;
+}
+
+#summary-others {
+    margin-top: 20%;
+    display: flex;
 }
 
 #popup-holder {
