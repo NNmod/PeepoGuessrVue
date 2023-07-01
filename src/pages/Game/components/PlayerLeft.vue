@@ -33,7 +33,7 @@ export default {
 
 <style scoped>
 .disconnected {
-    filter: grayscale(1);
+    filter: grayscale(1) contrast(1.5) brightness(1);
 }
 
 #player-holder {

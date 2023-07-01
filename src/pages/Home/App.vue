@@ -11,7 +11,7 @@
                     <a class="headline" href="https://ppg.nnmod.com/lobby.html?type=singleplayer">{{ $t('home.menu.single') }}</a>
                 </div>
                 <div class="headline-holder">
-                    <button class="headline">{{ $t('home.menu.multi') }}</button>
+                    <a class="headline" href="https://ppg.nnmod.com/lobby.html?type=multiplayer">{{ $t('home.menu.multi') }}</a>
                 </div>
                 <div class="headline-holder">
                     <button class="headline">{{ $t('home.menu.party') }}</button>

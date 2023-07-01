@@ -148,8 +148,8 @@ export default {
     flex-direction: column;
     align-items: center;
     margin-left: 8%;
-    font-size: 1.6vh;
-    line-height: 1.6vh;
+    font-size: 1.5vh;
+    line-height: 1.5vh;
 }
 
 .left-chevron-fade {
@@ -205,8 +205,8 @@ export default {
     }
     
     #stats-holder {
-        font-size: 3vh;
-        line-height: 3vh;
+        font-size: 2.9vh;
+        line-height: 2.9vh;
     }
 
     #name {
@@ -235,8 +235,8 @@ export default {
     }
     
     #stats-holder {
-        font-size: 4.4vh;
-        line-height: 4.4vh;
+        font-size: 4.3vh;
+        line-height: 4.3vh;
     }
 
     #name {
