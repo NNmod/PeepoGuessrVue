@@ -645,6 +645,7 @@ export default {
 
 #summary-title {
     font-size: 40px;
+    line-height: 24px;
     margin: 2%;
 }
 
@@ -757,6 +758,7 @@ export default {
 
     #summary-title {
         font-size: 64px;
+        line-height: 48px;
     }
     
     #low-holder {
