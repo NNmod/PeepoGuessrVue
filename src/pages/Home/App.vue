@@ -25,36 +25,39 @@
             </div>
         </div>
     </div>
-    <div>
+    <div id="top-holder">
+        <div id="menu-button" class="button top-button-holder" @click="menuToggle">
+            <img id="menu-bars" class="top-logo" src="./assets/bars.svg"/>
+        </div>
         <div v-if="account.isAuthorize">
             <PlayerRight :name="account.data.twitchName" :url="account.data.imageUrl" :score="account.data.score"
                          :division-id="account.data.divisionId"/>
         </div>
-        <div v-else-if="account.isLoaded">
+        <div v-else-if="account.isLoaded" id="authorize-button">
             <button id="authorize" class="button" @click="authorize">
-                <div id="authorize-holder">
-                    <img id="twitch-logo" src="./assets/twitch-logo.png"/>
+                <div class="top-button-holder">
+                    <img class="top-logo" src="./assets/twitch-logo.png"/>
                     <div>{{ $t('home.authorize.signIn') }}</div>
                 </div>
             </button>
         </div>
     </div>
-    <div id="low-holder">
+    <div id="low-holder" v-bind:class="pages.menuSwitch ? 'menu-opened' : 'menu-closed'">
         <div id="second-menu-holder">
-            <button id="get-started-button" class="button">{{ $t('home.secondMenu.getStarted') }}</button>
+            <button class="button" @click="getStartedToggle">{{ $t('home.secondMenu.getStarted') }}</button>
             <button class="button">{{ $t('home.secondMenu.settings') }}</button>
         </div>
         <div id="credentials-menu-holder">
-            <button id="privacy-button" class="button">{{ $t('home.credentials.privacy') }}</button>
-            <button id="terms-button" class="button">{{ $t('home.credentials.terms') }}</button>
+            <button class="button" @click="privacyToggle">{{ $t('home.credentials.privacy') }}</button>
+            <button class="button" @click="termsToggle">{{ $t('home.credentials.terms') }}</button>
             <button class="button">{{ $t('home.credentials.thirdParty') }}</button>
             <button class="button">{{ $t('home.credentials.credentials') }}</button>
             <a class="button" href="https://github.com/nnmod">dev by nnmod</a>
         </div>
     </div>
-    <GetStarted/>
-    <PrivacyPolicy/>
-    <TermsOfUse/>
+    <GetStarted v-bind:class="pages.getStartedSwitch ? 'opened' : 'closed'"/>
+    <PrivacyPolicy v-bind:class="pages.privacySwitch ? 'opened' : 'closed'"/>
+    <TermsOfUse v-bind:class="pages.termsSwitch ? 'opened' : 'closed'"/>
 </template>
 
 <script>
@@ -89,6 +92,12 @@ export default {
                     gameCode: null,
                     gameExpire: null
                 }
+            },
+            pages: {
+                menuSwitch: false,
+                getStartedSwitch: false,
+                termsSwitch: false,
+                privacySwitch: false
             }
         }
     },
@@ -152,6 +161,18 @@ export default {
             const left = (width - w) / 2 / systemZoom + dualScreenLeft
             const top = (height - h) / 2 / systemZoom + dualScreenTop
             return [top, left]
+        },
+        menuToggle() {
+            this.pages.menuSwitch = !this.pages.menuSwitch;
+        },
+        getStartedToggle() {
+            this.pages.getStartedSwitch = !this.pages.getStartedSwitch;
+        },
+        termsToggle() {
+            this.pages.termsSwitch = !this.pages.termsSwitch;
+        },
+        privacyToggle() {
+            this.pages.privacySwitch = !this.pages.privacySwitch;
         }
     },
     mounted() {
@@ -188,13 +209,8 @@ export default {
     align-items: center;
 }
 
-#menu-holder {
-    display: flex;
-    flex-direction: column;
-    margin-top: 5vh;
-}
 
-#authorize {
+#top-holder {
     position: absolute;
     display: flex;
     right: 8px;
@@ -202,31 +218,55 @@ export default {
     top: 8px;
     height: 6vh;
     max-height: 140px;
-    width: auto;
+    width: calc(100% - 16px);
+}
+
+#authorize {
+    width: 100%;
+    display: flex;
     justify-content: center;
 }
 
-#authorize-holder {
+#menu-button {
+    z-index: 104;
+    height: 100%;
+    margin-right: 4px;
+}
+
+#authorize-button {
+    flex-grow: 1;
+}
+
+.top-button-holder {
     display: flex;
     align-items: center;
     font-size: 20px;
 }
 
-#twitch-logo {
-    z-index: 99;
+.top-logo {
     height: 5vh;
     max-height: 116px;
     object-fit: cover;
     object-position: center;
 }
 
+#menu-bars {
+    filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
+}
+
 #low-holder {
-    display: flex;
+    z-index: 103;
     flex-direction: column;
     position: absolute;
-    width: auto;
-    bottom: 8px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    padding-right: 8px;
+    padding-bottom: 8px;
     justify-content: end;
+    backdrop-filter: blur(4px);
+    background: rgba(0, 0, 0, 0.5);
 }
 
 #second-menu-holder {
@@ -297,6 +337,20 @@ export default {
         margin-top: 5vh;
     }
 
+    #low-holder {
+        flex-direction: row;
+        left: 0;
+        top: auto;
+        bottom: 8px;
+        height: auto;
+        padding-right: 0;
+        padding-bottom: 0;
+        backdrop-filter: unset;
+        background: unset;
+        justify-content: space-between;
+        width: 100%;
+    }
+
     .headline-holder {
         height: 8vh;
     }
@@ -330,18 +384,30 @@ export default {
     display: none;
 }
 
+.menu-opened {
+    display: flex;
+}
+
+.menu-closed {
+    display: none;
+}
+
 @media (min-width: 1024px) {
+    #menu-button {
+        display: none;
+    }
+
+    #top-holder {
+        position: absolute;
+        left: auto;
+        width: auto;
+    }
+    
     #authorize {
         left: auto;
         right: 8px;
         max-width: 490px;
         justify-content: center;
-    }
-    
-    #low-holder {
-        justify-content: space-between;
-        flex-direction: row;
-        width: 100%;
     }
 
     #second-menu-holder {
@@ -357,6 +423,10 @@ export default {
     .button {
         margin-left: 4px;
         margin-right: 4px;
+    }
+
+    .menu-closed {
+        display: flex;
     }
 }
 

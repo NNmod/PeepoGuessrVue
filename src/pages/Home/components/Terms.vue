@@ -1,5 +1,5 @@
 <template>
-    <div id="terms-of-use" class="closed">
+    <div id="terms-of-use">
         <div id="content-holder">
             <div class="content-break"/>
             <div>
@@ -54,7 +54,7 @@
                 </div>
             </div>
             <div class="content-break">
-                <button id="terms-close-button" class="button">{{ $t('close') }}</button>
+                <button id="terms-close-button" class="button" @click="$parent.termsToggle">{{ $t('close') }}</button>
             </div>
         </div>
     </div>
@@ -69,7 +69,7 @@ export default {
 <style scoped>
 
 #terms-of-use {
-    z-index: 100;
+    z-index: 105;
     position: absolute;
     top: 0;
     width: 100%;

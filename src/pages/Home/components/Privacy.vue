@@ -1,5 +1,5 @@
 <template>
-    <div id="privacy" class="closed">
+    <div id="privacy">
         <div id="content-holder">
             <div class="content-break"/>
             <div>
@@ -50,7 +50,7 @@
                 </div>
             </div>
             <div class="content-break">
-                <button id="privacy-close-button" class="button">{{ $t('close') }}</button>
+                <button id="privacy-close-button" class="button" @click="$parent.privacyToggle">{{ $t('close') }}</button>
             </div>
         </div>
     </div>
@@ -65,7 +65,7 @@ export default {
 <style scoped>
 
 #privacy {
-    z-index: 100;
+    z-index: 105;
     position: absolute;
     top: 0;
     width: 100%;

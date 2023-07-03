@@ -1,5 +1,5 @@
 <template>
-  <div id="get-started" class="closed">
+  <div id="get-started">
       <div id="content-holder">
           <div class="content-break"/>
           <div>
@@ -35,7 +35,7 @@
               </div>
           </div>
           <div class="content-break">
-              <button id="get-started-close-button" class="button">{{ $t('close') }}</button>
+              <button id="get-started-close-button" class="button" @click="$parent.getStartedToggle">{{ $t('close') }}</button>
           </div>
       </div>
   </div>
@@ -50,7 +50,7 @@ export default {
 <style scoped>
 
 #get-started {
-    z-index: 100;
+    z-index: 105;
     position: absolute;
     top: 0;
     width: 100%;
