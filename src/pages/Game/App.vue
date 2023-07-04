@@ -26,9 +26,10 @@
     <div id="low-holder">
         <div id="second-menu-holder">
             <button class="button" @click="toSpawn">{{ $t('game.returnToSpawn') }}</button>
-            <button class="button">{{ $t('home.secondMenu.settings') }}</button>
+            <button class="button" @click="settingsToggle">{{ $t('home.secondMenu.settings') }}</button>
         </div>
     </div>
+    <Settings v-bind:class="pages.settingsSwitch ? 'opened' : 'closed'"/>
     <div id="map-container"></div>
     <div id="app">
     </div>
@@ -46,7 +47,13 @@
             <div class="main-holder">
                 <Logo/>
                 <div class="menu-holder">
-                    <div class="headline-holder">{{ $t('game.error') }}</div>
+                    <div v-if="worksExpire !== null">
+                        <div class="headline-holder">{{ $t('home.menu.works') }}</div>
+                        <div class="headline-holder">{{ $t('home.menu.worksExpire') }} {{ worksLocalExpire }}</div>
+                    </div>
+                    <div v-else>
+                        <div class="headline-holder">{{ $t('game.error') }}</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -127,14 +134,17 @@ import PlayerLeftRoundSummary from "./components/PlayerLeftRoundSummary.vue";
 import PlayerRightRoundSummary from "./components/PlayerRightRoundSummary.vue";
 import PlayerSummaryMain from "./components/PlayerSummaryMain.vue";
 import PlayerSummaryOther from "./components/PlayerSummaryOther.vue";
+import Settings from "./components/Settings.vue";
 import {BlueMapApp} from "@/pages/Game/js/BlueMapApp";
 import {PopupMarker} from "@/pages/Game/js/markers/PopupMarker";
 import {GuessMarker} from "@/pages/Game/js/markers/GuessMarker";
 import {Vector2} from "three";
+import {setLanguage} from "@/pages/Game/i18n";
 
 export default {
     name: 'App',
     components: {
+        Settings,
         PlayerSummaryMain,
         PlayerSummaryOther,
         PlayerRightRoundSummary,
@@ -161,6 +171,8 @@ export default {
             guessProcess: false,
             guessPanelSwitch: false,
             signalr: null,
+            worksExpire: null,
+            worksLocalExpire: '',
             game: {
                 status: 'prepare',//prepare
                 isCompleted: false,
@@ -195,6 +207,14 @@ export default {
                 win: null,
                 promotion: null,
                 demotion: null
+            },
+            pages: {
+              settingsSwitch: false  
+            },
+            settings: {
+                language: 'en',
+                musicVol: 100,
+                effectsVol: 100
             }
         }
     },
@@ -224,6 +244,11 @@ export default {
         },
         connectionError() {
             this.game.status = 'error';
+        },
+        maintenance(value) {
+            this.worksExpire = value.worksExpire;
+            if (this.worksExpire)
+                this.worksLocalExpire = new Date(this.worksExpire).toLocaleTimeString();
         },
         completeGame(value) {
             this.game.round.roundDelay = new Date(value.summaryDelay);
@@ -306,7 +331,7 @@ export default {
         roundPromotion(value) {
             this.game.round.roundExpire = value.roundExpire;
             if (this.audios.bell)
-                this.audios.bell.cloneNode(true).play().catch(() => {
+                this.audios.bell.play().catch(() => {
                 });
         },
         userGuess(value) {
@@ -482,12 +507,34 @@ export default {
                 }
             };
             window.requestAnimationFrame(step);
+        },
+        settingsToggle() {
+            this.pages.settingsSwitch = !this.pages.settingsSwitch;
+        },
+        effectsVolumeChange() {
+            localStorage.setItem('evol', this.settings.effectsVol);
+            this.audios.clock.volume = this.settings.effectsVol * 0.01;
+            this.audios.bell.volume = this.settings.effectsVol * 0.01;
+            this.audios.hit.volume = this.settings.effectsVol * 0.01;
+            this.audios.damage.volume = this.settings.effectsVol * 0.01;
+            this.audios.defeat.volume = this.settings.effectsVol * 0.01;
+            this.audios.win.volume = this.settings.effectsVol * 0.01;
+            this.audios.promotion.volume = this.settings.effectsVol * 0.01;
+            this.audios.demotion.volume = this.settings.effectsVol * 0.01;
+        },
+        musicVolumeChange() {
+            localStorage.setItem('mvol', this.settings.musicVol);
+        },
+        languageChange(value) {
+            this.settings.language = value;
+            setLanguage(value);
         }
     },
     async mounted() {
         this.signalr = useSignalR();
         this.signalr.connection.onclose(() => this.connectionError());
         this.signalr.on('Error', () => this.error());
+        this.signalr.on('MaintenanceExpire', value => this.maintenance(value));
         this.signalr.on('GameSummary', value => this.completeGame(value));
         this.signalr.on('RoundSummary', value => this.completeRound(value));
         this.signalr.on('NewRound', value => this.newRound(value));
@@ -496,9 +543,14 @@ export default {
         this.signalr.on('NewUser', value => this.newUser(value));
         this.signalr.on('UserStatus', value => this.userStatus(value));
 
+        this.settings.effectsVol = localStorage.getItem('evol') || 100;
+        this.settings.musicVol = localStorage.getItem('mvol') || 100;
+        this.settings.language = localStorage.getItem('lang') || 'en';
+        
         this.audios.clock = new Audio('https://ppg.cdn.nnmod.com/assets/audios/clock.mp3');
         this.audios.clock.loop = false;
         this.audios.bell = new Audio('https://ppg.cdn.nnmod.com/assets/audios/bell.mp3');
+        this.audios.bell.loop = false;
         this.audios.hit = new Audio('https://ppg.cdn.nnmod.com/assets/audios/summary/round/hit.mp3');
         this.audios.hit.loop = false;
         this.audios.damage = new Audio('https://ppg.cdn.nnmod.com/assets/audios/summary/round/damage.mp3');
@@ -511,6 +563,15 @@ export default {
         this.audios.promotion.loop = false;
         this.audios.demotion = new Audio('https://ppg.cdn.nnmod.com/assets/audios/summary/division/demoted.mp3');
         this.audios.demotion.loop = false;
+
+        this.audios.clock.volume = this.settings.effectsVol * 0.01;
+        this.audios.bell.volume = this.settings.effectsVol * 0.01;
+        this.audios.hit.volume = this.settings.effectsVol * 0.01;
+        this.audios.damage.volume = this.settings.effectsVol * 0.01;
+        this.audios.defeat.volume = this.settings.effectsVol * 0.01;
+        this.audios.win.volume = this.settings.effectsVol * 0.01;
+        this.audios.promotion.volume = this.settings.effectsVol * 0.01;
+        this.audios.demotion.volume = this.settings.effectsVol * 0.01;
         
         const playMap = new BlueMapApp(document.getElementById("free-map-holder"), true);
         this.playMap = playMap;
@@ -701,6 +762,7 @@ export default {
     color: white;
     box-shadow: black 0 0 0;
     transition: 0.16s ease-in;
+    backdrop-filter: blur(8px);
 }
 
 .button:hover {
@@ -722,12 +784,21 @@ export default {
     max-width: unset;
     box-shadow: black 0 0 0;
     transition: 0.16s ease-in;
+    backdrop-filter: blur(8px);
 }
 
 .button-2:hover {
     box-shadow: black 0 4px 8px;
     background: black;
     transition: 0.16s ease-out;
+}
+
+.opened {
+    display: block;
+}
+
+.closed {
+    display: none;
 }
 
 @media (min-width: 1024px) {

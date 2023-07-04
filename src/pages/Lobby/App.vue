@@ -4,18 +4,21 @@
         <Logo/>
         <div id="menu-holder">
             <div id="menu-title">
-                <div v-if="redirectGame !== null">{{ $t('lobby.redirect') }}</div>
+                <div v-if="worksExpire !== null">{{ $t('home.menu.works') }}</div>
+                <div v-else-if="redirectGame !== null">{{ $t('lobby.redirect') }}</div>
                 <div v-else-if="lobby.isMatchmakingTrouble">{{ $t('lobby.trouble') }}</div>
                 <div v-else-if="lobby.isDelayed">{{ $t('lobby.delayed') }}</div>
                 <div v-else>{{ $t('lobby.searching') }}</div>
             </div>
-            <div v-if="redirectGame !== null">
+            
+            <div v-if="worksExpire !== null">
+                <div id="menu-title">{{ $t('home.menu.worksExpire') }} {{ worksLocalExpire }}</div>
+            </div>
+            <div v-else-if="redirectGame !== null">
                 <div class="headline-holder">
                     <a class="headline-flash" :href="'https://ppg.nnmod.com/game.html?code=' + this.redirectGame.gameCode">{{ $t('home.menu.comeback') }}</a>
                 </div>
-                <div id="menu-title">
-                    {{ $t('lobby.untilOver') }}
-                </div>
+                <div id="menu-title">{{ $t('lobby.untilOver') }}</div>
             </div>
             <div v-else>
                 <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
@@ -47,6 +50,8 @@ export default {
                 isMatchmakingTrouble: false,
             },
             redirectGame: null,
+            worksExpire: null,
+            worksLocalExpire: '',
             enemy: null
         }
     },
@@ -56,6 +61,11 @@ export default {
         },
         enemyFound(value) {
             this.enemy = value;
+        },
+        maintenance(value) {
+            this.worksExpire = value.worksExpire;
+            if (this.worksExpire)
+                this.worksLocalExpire = new Date(this.worksExpire).toLocaleTimeString();
         },
         redirectToGame(value) {
             this.redirectGame = value;
@@ -80,6 +90,7 @@ export default {
         this.signalr = useSignalR();
         this.signalr.connection.onclose(() => this.connectionError());
         this.signalr.on('Error', () => this.error());
+        this.signalr.on('MaintenanceExpire', value => this.maintenance(value));
         this.signalr.on('EnemyRevoke', () => this.enemyRevoke());
         this.signalr.on('Delayed', () => this.lobby.isDelayed = true);
         this.signalr.on('MatchmakingTrouble', () => this.lobby.isMatchmakingTrouble = true);
@@ -164,6 +175,7 @@ export default {
     max-width: unset;
     box-shadow: black 0 0 0;
     transition: 0.16s ease-in;
+    backdrop-filter: blur(8px);
 }
 
 .button:hover {

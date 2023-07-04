@@ -4,20 +4,30 @@
         <Logo/>
         <div id="menu-holder">
             <div v-if="account.isLoaded">
-                <div class="headline-holder" v-if="this.account.data.gameCode">
-                    <a class="headline-flash" :href="'https://ppg.nnmod.com/game.html?code=' + this.account.data.gameCode">{{ $t('home.menu.comeback') }}</a>
+                <div v-if="account.data.worksExpire === null">
+                    <div class="headline-holder" v-if="account.data.gameCode">
+                        <a class="headline-flash" :href="'https://ppg.nnmod.com/game.html?code=' + account.data.gameCode">{{ $t('home.menu.comeback') }}</a>
+                    </div>
+                    <div class="headline-holder">
+                        <a class="headline enabled" href="https://ppg.nnmod.com/lobby.html?type=singleplayer">{{ $t('home.menu.single') }}</a>
+                    </div>
+                    <div class="headline-holder">
+                        <a class="headline enabled" href="https://ppg.nnmod.com/lobby.html?type=multiplayer">{{ $t('home.menu.multi') }}</a>
+                    </div>
+                    <div class="headline-holder">
+                        <button class="headline disabled">{{ $t('home.menu.party') }}</button>
+                    </div>
+                    <div class="headline-holder">
+                        <button class="headline disabled">{{ $t('home.menu.experiments') }}</button>
+                    </div>
                 </div>
-                <div class="headline-holder">
-                    <a class="headline enabled" href="https://ppg.nnmod.com/lobby.html?type=singleplayer">{{ $t('home.menu.single') }}</a>
-                </div>
-                <div class="headline-holder">
-                    <a class="headline enabled" href="https://ppg.nnmod.com/lobby.html?type=multiplayer">{{ $t('home.menu.multi') }}</a>
-                </div>
-                <div class="headline-holder">
-                    <button class="headline disabled">{{ $t('home.menu.party') }}</button>
-                </div>
-                <div class="headline-holder">
-                    <button class="headline disabled">{{ $t('home.menu.experiments') }}</button>
+                <div v-else>
+                    <div id="menu-title">
+                        <div>{{ $t('home.menu.works') }}</div>
+                    </div>
+                    <div id="menu-title">
+                        <div>{{ $t('home.menu.worksExpire') }} {{ account.worksLocalExpire }}</div>
+                    </div>
                 </div>
             </div>
             <div v-else>
@@ -45,19 +55,20 @@
     <div id="low-holder" v-bind:class="pages.menuSwitch ? 'menu-opened' : 'menu-closed'">
         <div id="second-menu-holder">
             <button class="button" @click="getStartedToggle">{{ $t('home.secondMenu.getStarted') }}</button>
-            <button class="button">{{ $t('home.secondMenu.settings') }}</button>
+            <button class="button" @click="settingsToggle">{{ $t('home.secondMenu.settings') }}</button>
         </div>
         <div id="credentials-menu-holder">
             <button class="button" @click="privacyToggle">{{ $t('home.credentials.privacy') }}</button>
             <button class="button" @click="termsToggle">{{ $t('home.credentials.terms') }}</button>
-            <button class="button">{{ $t('home.credentials.thirdParty') }}</button>
-            <button class="button">{{ $t('home.credentials.credentials') }}</button>
+            <button class="button" @click="credentialsToggle">{{ $t('home.credentials.credentials') }}</button>
             <a class="button" href="https://github.com/nnmod">dev by nnmod</a>
         </div>
     </div>
     <GetStarted v-bind:class="pages.getStartedSwitch ? 'opened' : 'closed'"/>
     <PrivacyPolicy v-bind:class="pages.privacySwitch ? 'opened' : 'closed'"/>
     <TermsOfUse v-bind:class="pages.termsSwitch ? 'opened' : 'closed'"/>
+    <Settings v-bind:class="pages.settingsSwitch ? 'opened' : 'closed'"/>
+    <Credentials v-bind:class="pages.credentialsSwitch ? 'opened' : 'closed'"/>
 </template>
 
 <script>
@@ -68,10 +79,15 @@ import PlayerRight from './components/PlayerRight.vue'
 import GetStarted from "./components/GetStarted.vue";
 import PrivacyPolicy from "./components/Privacy.vue";
 import TermsOfUse from "./components/Terms.vue";
+import Settings from "./components/Settings.vue";
+import Credentials from "./components/Credentials.vue";
+import {setLanguage} from "@/pages/Home/i18n";
 
 export default {
     name: 'App',
     components: {
+        Credentials,
+        Settings,
         TermsOfUse,
         PrivacyPolicy,
         GetStarted,
@@ -84,20 +100,29 @@ export default {
             account: {
                 isLoaded: false,
                 isAuthorize: false,
+                worksLocalExpire: '',
                 data: {
                     twitchName: '',
                     imageUrl: '',
                     divisionId: 1,
                     score: 0,
                     gameCode: null,
-                    gameExpire: null
+                    gameExpire: null,
+                    worksExpire: null
                 }
             },
             pages: {
                 menuSwitch: false,
                 getStartedSwitch: false,
                 termsSwitch: false,
-                privacySwitch: false
+                privacySwitch: false,
+                settingsSwitch: false,
+                credentialsSwitch: false
+            },
+            settings: {
+                language: 'en',
+                musicVol: 100,
+                effectsVol: 100
             }
         }
     },
@@ -109,6 +134,8 @@ export default {
                     this.account.isLoaded = true;
                     this.account.isAuthorize = true;
                     this.account.data = data;
+                    if (this.account.data.worksExpire)
+                        this.account.worksLocalExpire = new Date(this.account.data.worksExpire).toLocaleTimeString();
                     if (this.account.data.gameExpire) 
                         this.countdownComeback();
                 })
@@ -121,7 +148,8 @@ export default {
                         divisionId: 1,
                         score: 0,
                         gameCode: null,
-                        gameExpire: null
+                        gameExpire: null,
+                        worksExpire: null
                     };
                 })
         },
@@ -173,10 +201,29 @@ export default {
         },
         privacyToggle() {
             this.pages.privacySwitch = !this.pages.privacySwitch;
+        },
+        settingsToggle() {
+            this.pages.settingsSwitch = !this.pages.settingsSwitch;
+        },
+        credentialsToggle() {
+            this.pages.credentialsSwitch = !this.pages.credentialsSwitch;
+        },
+        effectsVolumeChange() {
+            localStorage.setItem('evol', this.settings.effectsVol);
+        },
+        musicVolumeChange() {
+            localStorage.setItem('mvol', this.settings.musicVol);
+        },
+        languageChange(value) {
+            this.settings.language = value;
+            setLanguage(value);
         }
     },
     mounted() {
-        this.getUser()
+        this.getUser();
+        this.settings.effectsVol = localStorage.getItem('evol') || 100;
+        this.settings.musicVol = localStorage.getItem('mvol') || 100;
+        this.settings.language = localStorage.getItem('lang') || 'en';
     }
 }
 </script>
@@ -248,6 +295,11 @@ export default {
     max-height: 116px;
     object-fit: cover;
     object-position: center;
+}
+
+#menu-title {
+    font-size: 28px;
+    color: white;
 }
 
 #menu-bars {
@@ -324,6 +376,7 @@ export default {
     color: white;
     box-shadow: black 0 0 0;
     transition: 0.16s ease-in;
+    backdrop-filter: blur(8px);
 }
 
 .button:hover {
