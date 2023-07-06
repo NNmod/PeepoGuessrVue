@@ -21,34 +21,55 @@
                 <div id="menu-title">{{ $t('lobby.untilOver') }}</div>
             </div>
             <div v-else>
+                <div v-if="lobbyType === 'multiplayer'" id="selector-holder">
+                    <div class="scroll">
+                        <ul id="players-holder">
+                            <li class="player-item-holder" v-for="user in users" :key="user.userId">
+                                <PlayerLeft :name="user.name" :division-id="user.divisionId" :score="user.score" :url="user.imageUrl" 
+                                            :is-requested="user.isRequested" :is-invited="user.isInvited" :is-random-enable="user.isRandomAcceptable"/>
+                                <div class="button-holder">
+                                    <button class="button button-small" v-if="user.isInvited" @click="revokeInviteUser(user.userId)">отменить</button>
+                                    <button class="button button-small" v-else @click="inviteUser(user.userId)">пригласить</button>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <button class="button" v-if="isRandomAcceptable" @click="randomToggle">disable random search</button>
+                    <button class="button" v-else @click="randomToggle">enable random search</button>
+                </div>
                 <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
             </div>
         </div>
     </div>
     <div id="low-holder">
-        <a class="button" href="https://ppg.nnmod.com">{{ $t('game.summary.toMenu') }}</a>
+        <a class="button button-grow" href="https://ppg.nnmod.com">{{ $t('game.summary.toMenu') }}</a>
     </div>
 </template>
 
 <script>
 
 import Background from './components/Background.vue'
+import PlayerLeft from './components/PlayerLeft.vue'
 import Logo from './components/Logo.vue'
 import {useSignalR} from "@quangdao/vue-signalr";
 
 export default {
     name: 'App',
     components: {
+        PlayerLeft,
         Background,
         Logo
     },
     data() {
         return {
             signalr: null,
+            lobbyType: '',
             lobby: {
                 isDelayed: false,
                 isMatchmakingTrouble: false,
             },
+            users: [],
+            isRandomAcceptable: false,
             redirectGame: null,
             worksExpire: null,
             worksLocalExpire: '',
@@ -84,9 +105,84 @@ export default {
                     this.signalr.connection.start().catch();
                 }
             }, 1000)
+        },
+        randomToggle() {
+            fetch('https://ppg.nnmod.com/api/lobby/lobby/random',{
+                method:  'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    isRandomAcceptable: !this.isRandomAcceptable
+                })
+            }).then(() => this.isRandomAcceptable = !this.isRandomAcceptable)
+                .catch()
+        },
+        inviteUser(id) {
+            fetch('https://ppg.nnmod.com/api/lobby/lobby/invite',{
+                method:  'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: id
+                })
+            }).then().catch()
+        },
+        revokeInviteUser(id) {
+            fetch('https://ppg.nnmod.com/api/lobby/lobby/invite/remove',{
+                method:  'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: id
+                })
+            }).then().catch()
+        },
+        newUser(value) {
+            console.log(value);
+            this.users.push(value);  
+        },
+        removeUser(value) {
+            console.log(value);
+            const user = this.users.find((o) => o.userId === value.userId);
+            if (user) {
+                let index = this.users.indexOf(user);
+                if (index > -1) {
+                    this.users.splice(index, 1);
+                }
+            }
+        },
+        randomUpdate(value) {
+            console.log(value);
+            const user = this.game.users.find((o) => o.userId === value.userId);
+            user.isRandomAcceptable = value.isRandomAcceptable;
+        },
+        inviteAdded(value) {
+            console.log(value);
+            const user = this.game.users.find((o) => o.userId === value.userId);
+            user.isRequested = true;
+        },
+        inviteAchieved(value) {
+            console.log(value);
+            const user = this.game.users.find((o) => o.userId === value.userId);
+            user.isInvited = true;
+        },
+        inviteRemoved(value) {
+            console.log(value);
+            const user = this.game.users.find((o) => o.userId === value.userId);
+            user.isRequested = false;
+        },
+        inviteRevoked(value) {
+            console.log(value);
+            const user = this.game.users.find((o) => o.userId === value.userId);
+            user.isInvited = false;
         }
     },
     mounted() {
+        const urlParams = new URLSearchParams(window.location.search);
+        this.lobbyType = urlParams.get('type');
         this.signalr = useSignalR();
         this.signalr.connection.onclose(() => this.connectionError());
         this.signalr.on('Error', () => this.error());
@@ -96,6 +192,13 @@ export default {
         this.signalr.on('MatchmakingTrouble', () => this.lobby.isMatchmakingTrouble = true);
         this.signalr.on('EnemyFound', value => this.enemyFound(value));
         this.signalr.on('RedirectToGame', value => this.redirectToGame(value));
+        this.signalr.on('NewUser', value => this.newUser(value));
+        this.signalr.on('RemoveUser', value => this.removeUser(value));
+        this.signalr.on('RandomUpdate', value => this.randomUpdate(value));
+        this.signalr.on('InviteAdded', value => this.inviteAdded(value));
+        this.signalr.on('InviteAchieved', value => this.inviteAchieved(value));
+        this.signalr.on('InviteRemoved', value => this.inviteRemoved(value));
+        this.signalr.on('InviteRevoked', value => this.inviteRevoked(value));
         this.signalr.on('GameFound', value => this.gameFound(value));
     }
 }
@@ -132,6 +235,49 @@ export default {
     height: 100%;
 }
 
+#players-holder {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    flex-grow: 1;
+}
+
+.player-item-holder {
+    position: relative;
+    display: flex;
+    width: 100%;
+    height: 6vh;
+    margin-bottom: 8px;
+    justify-content: end;
+    align-items: center;
+}
+
+.button-holder {
+    display: flex;
+    justify-content: end;
+    padding-left: calc(6vh / 2 * 7 + 8px);
+    width: 100%;
+}
+
+.scroll {
+    overflow-y: auto;
+    width: 100%;
+    border: solid white;
+    border-radius: 12px;
+    margin-bottom: 4px;
+    margin-left: 4px;
+    margin-right: 4px;
+    padding: 2px 4px 2px 4px;
+}
+
+#selector-holder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 96vw;
+    height: 48vh;
+}
+
 #main-holder {
     display: flex;
     flex-direction: column;
@@ -164,8 +310,15 @@ export default {
     justify-content: center;
 }
 
-.button {
+.button-small {
+    font-size: 12px;
+}
+
+.button-grow {
     flex-grow: 1;
+}
+
+.button {
     border: solid white;
     border-radius: 12px;
     margin-left: 4px;
@@ -198,6 +351,23 @@ export default {
         text-shadow: black 0 0.75vh 8px;
         transition: 0.16s ease-out;
     }
+
+    .player-item-holder {
+        height: 8vh;
+    }
+    
+    .button-holder {
+        padding-left: calc(8vh / 2 * 7 + 16px);
+    }
+    
+    #selector-holder {
+        width: 56vw;
+        height: 36vh;
+    }
+
+    #players-holder {
+        padding: 6px 12px 6px 12px;
+    }
     
     #menu-holder {
         margin-top: 5vh;
@@ -205,6 +375,11 @@ export default {
 }
 
 @media (min-width: 1024px) {
+    #selector-holder {
+        width: 42vw;
+        height: 36vh;
+    }
+    
     .button {
         border: solid white;
         border-radius: 12px;
