@@ -254,7 +254,6 @@ export default {
             this.game.round.roundDelay = new Date(value.summaryDelay);
 
             value.users.forEach(userSummary => {
-                console.log(userSummary);
                 this.userSummary(userSummary);
             });
             this.countdownRoundDelay();

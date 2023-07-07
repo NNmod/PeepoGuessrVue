@@ -78,7 +78,6 @@ export class PopupMarker extends Marker {
             .add(evt.detail.ray.direction.clone().multiplyScalar(0.05))
             .floor();
         this.guessPosition = new Vector2(this.position.x, this.position.z);
-        console.log(this.position);
         this.open();
     };
     

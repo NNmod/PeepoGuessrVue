@@ -8,7 +8,9 @@
                 <div v-else-if="redirectGame !== null">{{ $t('lobby.redirect') }}</div>
                 <div v-else-if="lobby.isMatchmakingTrouble">{{ $t('lobby.trouble') }}</div>
                 <div v-else-if="lobby.isDelayed">{{ $t('lobby.delayed') }}</div>
-                <div v-else>{{ $t('lobby.searching') }}</div>
+                <div v-else-if="isError">{{ $t('lobby.error') }}</div>
+                <div v-else-if="lobbyType === 'multiplayer'">{{ $t('lobby.searching') }}</div>
+                <div v-else>{{ $t('lobby.creating') }}</div>
             </div>
             
             <div v-if="worksExpire !== null">
@@ -20,29 +22,34 @@
                 </div>
                 <div id="menu-title">{{ $t('lobby.untilOver') }}</div>
             </div>
-            <div v-else>
+            <div v-else-if="!isError">
                 <div v-if="lobbyType === 'multiplayer'" id="selector-holder">
                     <div class="scroll">
-                        <ul id="players-holder">
+                        <ul id="players-holder" v-if="users.length > 0">
                             <li class="player-item-holder" v-for="user in users" :key="user.userId">
-                                <PlayerLeft :name="user.name" :division-id="user.divisionId" :score="user.score" :url="user.imageUrl" 
+                                <PlayerLeft :name="user.name" :division-id="user.divisionId" :score="user.score" :url="user.imageUrl"
                                             :is-requested="user.isRequested" :is-invited="user.isInvited" :is-random-enable="user.isRandomAcceptable"/>
                                 <div class="button-holder">
-                                    <button class="button button-small" v-if="user.isInvited" @click="revokeInviteUser(user.userId)">отменить</button>
-                                    <button class="button button-small" v-else @click="inviteUser(user.userId)">пригласить</button>
+                                    <button class="button button-small" v-if="user.isRequested" @click="revokeInviteUser(user.userId)">{{ $t('lobby.multiplayer.action.revoke') }}</button>
+                                    <button class="button button-small" v-else @click="inviteUser(user.userId)">{{ $t('lobby.multiplayer.action.invite') }}</button>
                                 </div>
                             </li>
                         </ul>
+                        <div v-else id="menu-title">
+                            {{ $t('lobby.multiplayer.noPlayers') }}
+                        </div>
                     </div>
-                    <button class="button" v-if="isRandomAcceptable" @click="randomToggle">disable random search</button>
-                    <button class="button" v-else @click="randomToggle">enable random search</button>
+                    <button class="button" v-if="isRandomAcceptable" @click="randomToggle">{{ $t('lobby.multiplayer.random.disable') }}</button>
+                    <button class="button" v-else @click="randomToggle">{{ $t('lobby.multiplayer.random.enable') }}</button>
                 </div>
-                <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+                <div v-else>
+                    <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+                </div>
             </div>
         </div>
     </div>
     <div id="low-holder">
-        <a class="button button-grow" href="https://ppg.nnmod.com">{{ $t('game.summary.toMenu') }}</a>
+        <a class="button button-grow button-max-width" href="https://ppg.nnmod.com">{{ $t('game.summary.toMenu') }}</a>
     </div>
 </template>
 
@@ -62,6 +69,7 @@ export default {
     },
     data() {
         return {
+            isError: true,
             signalr: null,
             lobbyType: '',
             lobby: {
@@ -77,6 +85,14 @@ export default {
         }
     },
     methods: {
+        error() {
+            this.isError = true;
+            this.users = [];
+        },
+        connectionError() {
+            this.isError = true;
+            this.users = [];
+        },
         enemyRevoke() {
             this.enemy = null;
         },
@@ -156,34 +172,33 @@ export default {
         },
         randomUpdate(value) {
             console.log(value);
-            const user = this.game.users.find((o) => o.userId === value.userId);
+            const user = this.users.find((o) => o.userId === value.userId);
             user.isRandomAcceptable = value.isRandomAcceptable;
         },
         inviteAdded(value) {
             console.log(value);
-            const user = this.game.users.find((o) => o.userId === value.userId);
+            const user = this.users.find((o) => o.userId === value.userId);
             user.isRequested = true;
         },
         inviteAchieved(value) {
             console.log(value);
-            const user = this.game.users.find((o) => o.userId === value.userId);
+            const user = this.users.find((o) => o.userId === value.userId);
             user.isInvited = true;
         },
         inviteRemoved(value) {
             console.log(value);
-            const user = this.game.users.find((o) => o.userId === value.userId);
+            const user = this.users.find((o) => o.userId === value.userId);
             user.isRequested = false;
         },
         inviteRevoked(value) {
             console.log(value);
-            const user = this.game.users.find((o) => o.userId === value.userId);
+            const user = this.users.find((o) => o.userId === value.userId);
             user.isInvited = false;
         }
     },
     mounted() {
-        const urlParams = new URLSearchParams(window.location.search);
-        this.lobbyType = urlParams.get('type');
         this.signalr = useSignalR();
+        this.signalr.connectionSuccess(() => this.isError = false);
         this.signalr.connection.onclose(() => this.connectionError());
         this.signalr.on('Error', () => this.error());
         this.signalr.on('MaintenanceExpire', value => this.maintenance(value));
@@ -200,6 +215,9 @@ export default {
         this.signalr.on('InviteRemoved', value => this.inviteRemoved(value));
         this.signalr.on('InviteRevoked', value => this.inviteRevoked(value));
         this.signalr.on('GameFound', value => this.gameFound(value));
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        this.lobbyType = urlParams.get('type');
     }
 }
 </script>
@@ -262,6 +280,7 @@ export default {
 .scroll {
     overflow-y: auto;
     width: 100%;
+    height: 100%;
     border: solid white;
     border-radius: 12px;
     margin-bottom: 4px;
@@ -316,6 +335,10 @@ export default {
 
 .button-grow {
     flex-grow: 1;
+}
+
+.button-max-width {
+    max-width: unset;
 }
 
 .button {
@@ -377,7 +400,11 @@ export default {
 @media (min-width: 1024px) {
     #selector-holder {
         width: 42vw;
-        height: 36vh;
+        height: 40vh;
+    }
+
+    .button-max-width {
+        max-width: 240px;
     }
     
     .button {
@@ -386,7 +413,6 @@ export default {
         margin-left: 4px;
         margin-right: 4px;
         padding: 6px 12px 6px 12px;
-        max-width: 240px;
         color: white;
         box-shadow: black 0 0 0;
     }

@@ -6,14 +6,14 @@
             <span id="health">{{ score }}</span>
         </div>
         <div id="chevrons-holder">
-            <div id="right-chevron-holder" v-bind:class="isRequested ? 'yellow' : isInvited ? 'green' : isRandomEnable ? 'blue' : 'white'">
+            <div id="right-chevron-holder" v-bind:class="isRequested ? 'blue' : isInvited ? 'green' : isRandomEnable ? 'green' : 'white'">
                 <div id="name-holder">
                     <span id="name">{{ name }}</span>
                 </div>
             </div>
-            <div class="right-chevron-fade rcf-0" v-bind:class="isRequested ? 'yellow' : isInvited ? 'green' : isRandomEnable ? 'blue' : 'white'"></div>
-            <div class="right-chevron-fade rcf-1" v-bind:class="isRequested ? 'yellow' : isInvited ? 'green' : isRandomEnable ? 'blue' : 'white'"></div>
-            <div class="right-chevron-fade rcf-2" v-bind:class="isRequested ? 'yellow' : isInvited ? 'green' : isRandomEnable ? 'blue' : 'white'"></div>
+            <div class="right-chevron-fade rcf-0" v-bind:class="isRequested ? 'blue' : isInvited ? 'green' : isRandomEnable ? 'green' : 'white'"></div>
+            <div class="right-chevron-fade rcf-1" v-bind:class="isRequested ? 'blue' : isInvited ? 'green' : isRandomEnable ? 'green' : 'white'"></div>
+            <div class="right-chevron-fade rcf-2" v-bind:class="isRequested ? 'blue' : isInvited ? 'green' : isRandomEnable ? 'green' : 'white'"></div>
         </div>
     </div>
 </template>

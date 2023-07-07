@@ -39,7 +39,6 @@ export class GuessMarker extends Marker {
     }
 
     dispose() {
-        console.log('dispose called');
         super.dispose();
 
         if (this.element.parentNode) this.element.parentNode.removeChild(this.element);
