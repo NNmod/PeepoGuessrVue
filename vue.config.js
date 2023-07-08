@@ -27,6 +27,12 @@ module.exports = defineConfig({
       title: 'PeepoGuessr',
       chunks: [ 'chunk-vendors', 'chunk-common', 'game' ]
     },
+    'leaderboard': {
+      entry: './src/pages/Leaderboard/main.js',
+      template: 'public/index.html',
+      title: 'PeepoGuessr',
+      chunks: [ 'chunk-vendors', 'chunk-common', 'leaderboard' ]
+    },
     'test': {
       entry: './src/pages/Test/main.js',
       template: 'public/game.html',

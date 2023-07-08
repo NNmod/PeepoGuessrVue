@@ -6,7 +6,7 @@
             <span id="health">{{ score }}</span>
         </div>
         <div id="chevrons-holder">
-            <div id="right-chevron-holder" class="white">
+            <div id="right-chevron-holder" v-bind:class="isRequested ? 'blue' : isInvited ? 'green' : isRandomEnable ? 'green' : 'white'">
                 <div id="name-holder">
                     <span id="name">{{ name }}</span>
                 </div>
@@ -190,30 +190,15 @@ export default {
 
 .rcf-1 {
     margin-left: -24px;
-    opacity: 64%;
+    opacity: 70%;
     height: 4%;
     clip-path: polygon(0 0, 100% 0%, calc(100% - 2px) 100%, 0% 100%);
-    animation: blinkChevron1 3s ease-in-out infinite;
 }
 
 .rcf-2 {
     margin-left: -30px;
-    opacity: 32%;
+    opacity: 40%;
     height: 2%;
     clip-path: polygon(0 0, 100% 0%, calc(100% - 1px) 100%, 0% 100%);
-    animation: blinkChevron2 3s ease-in-out infinite;
-}
-
-@keyframes blinkChevron1{
-    0%{opacity: 64%;}
-    40%{opacity: 70%;}
-    80%{opacity: 64%;}
-    100%{opacity: 64%;}
-}
-
-@keyframes blinkChevron2{
-    0%{opacity: 32%;}
-    50%{opacity: 40%;}
-    100%{opacity: 32%;}
 }
 </style>

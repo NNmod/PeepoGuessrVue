@@ -42,6 +42,10 @@
         <div v-if="account.isAuthorize">
             <PlayerRight :name="account.data.twitchName" :url="account.data.imageUrl" :score="account.data.score"
                          :division-id="account.data.divisionId"/>
+            <div id="player-controls">
+                <!--<a class="button button-grow">{{ $t('home.playerMenu.profile') }}</a>-->
+                <a class="button button-grow" href="http://ppg.nnmod.com/leaderboard.html">{{ $t('home.playerMenu.leaderboard') }}</a>
+            </div>
         </div>
         <div v-else-if="account.isLoaded" id="authorize-button">
             <button id="authorize" class="button" @click="authorize">
@@ -333,6 +337,17 @@ export default {
     flex-direction: column;
 }
 
+#player-controls {
+    position: absolute;
+    top: calc(12px + 6vh);
+    right: 8px;
+    display: flex;
+    flex-direction: column;
+    width: calc(6vh / 2 * 7 - 3vh);
+    justify-content: end;
+    white-space: nowrap;
+}
+
 .headline-holder {
     display: block;
     height: 6vh;
@@ -367,6 +382,10 @@ export default {
     transition: 0.16s ease-out;
 }
 
+.button-grow {
+    flex-grow: 1;
+}
+
 .button {
     border: solid white;
     border-radius: 12px;
@@ -383,6 +402,22 @@ export default {
     box-shadow: black 0 4px 8px;
     background: black;
     transition: 0.16s ease-out;
+}
+
+.opened {
+    display: block;
+}
+
+.closed {
+    display: none;
+}
+
+.menu-opened {
+    display: flex;
+}
+
+.menu-closed {
+    display: none;
 }
 
 @media (min-width: 768px) {
@@ -402,6 +437,15 @@ export default {
         background: unset;
         justify-content: space-between;
         width: 100%;
+    }
+
+    #player-controls {
+        flex-direction: row;
+        position: absolute;
+        top: calc(12px + 8vh);
+        right: 8px;
+        display: flex;
+        width: calc(8vh / 2 * 7 - 4vh);
     }
 
     .headline-holder {
@@ -427,25 +471,7 @@ export default {
         text-shadow: black 0 0.75vh 8px;
         transition: 0.16s ease-out;
     }
-}
 
-.opened {
-    display: block;
-}
-
-.closed {
-    display: none;
-}
-
-.menu-opened {
-    display: flex;
-}
-
-.menu-closed {
-    display: none;
-}
-
-@media (min-width: 1024px) {
     #menu-button {
         display: none;
     }
@@ -455,7 +481,7 @@ export default {
         left: auto;
         width: auto;
     }
-    
+
     #authorize {
         left: auto;
         right: 8px;
@@ -472,7 +498,7 @@ export default {
         margin-right: 4px;
         flex-direction: row;
     }
-    
+
     .button {
         margin-left: 4px;
         margin-right: 4px;
