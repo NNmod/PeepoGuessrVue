@@ -160,6 +160,8 @@ export class BlueMapApp {
 
         let startOrtho = cm.ortho;
         let startTilt = cm.tilt;
+        
+        this.mapViewer.map.isHiresMap = true;
 
         this.viewAnimation = animate(p => {
             let ep = EasingFunctions.easeInOutQuad(p);
@@ -230,6 +232,8 @@ export class BlueMapApp {
 
         let startOrtho = cm.ortho;
         let startTilt = cm.tilt;
+
+        this.mapViewer.map.isHiresMap = true;
 
         this.viewAnimation = animate(p => {
             let ep = EasingFunctions.easeInOutQuad(p);

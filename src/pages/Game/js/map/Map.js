@@ -53,6 +53,7 @@ export class Map {
 
 		this.loadBlocker = loadBlocker;
 		this.events = events;
+		this.isHiresMap = false;
 
 		this.data = reactive({
 			id: id,
@@ -204,7 +205,9 @@ export class Map {
 			const lowresViewZ = Math.floor(lowresViewDistance / this.data.lowres.tileSize.z);
 			this.lowresTileManager[i].loadAroundTile(lowresX, lowresZ, lowresViewX, lowresViewZ);
 		}
-
+		
+		if (!this.isHiresMap) return;
+		
 		const hiresX = Math.floor((x - this.data.hires.translate.x) / this.data.hires.tileSize.x);
 		const hiresZ = Math.floor((z - this.data.hires.translate.z) / this.data.hires.tileSize.z);
 		const hiresViewX = Math.floor(hiresViewDistance / this.data.hires.tileSize.x);
