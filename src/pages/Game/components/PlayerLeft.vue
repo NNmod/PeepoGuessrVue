@@ -103,7 +103,7 @@ export default {
 }
 
 #right-chevron-holder {
-    z-index: 1;
+    z-index: 97;
     display: flex;
     align-items: center;
     justify-content: end;
@@ -162,7 +162,7 @@ export default {
 }
 
 .right-chevron-fade {
-    z-index: 1;
+    z-index: 97;
     width: 100%;
     height: 6%;
     background: white;

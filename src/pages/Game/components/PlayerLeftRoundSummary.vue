@@ -81,7 +81,7 @@ export default {
 }
 
 #avatar {
-    z-index: 98;
+    z-index: 9098;
     position: absolute;
     top: 0;
     left: 0;
@@ -93,7 +93,7 @@ export default {
 }
 
 #avatar-border {
-    z-index: 99;
+    z-index: 9099;
     position: absolute;
     top: 0;
     left: 0;
@@ -103,7 +103,7 @@ export default {
 }
 
 #health {
-    z-index: 100;
+    z-index: 9100;
     position: absolute;
     top: 0;
     left: 0;
@@ -118,7 +118,7 @@ export default {
 }
 
 #damage {
-    z-index: 100;
+    z-index: 9100;
     position: absolute;
     top: 0;
     left: 0;
@@ -142,7 +142,7 @@ export default {
 }
 
 #right-chevron-holder {
-    z-index: 1;
+    z-index: 9097;
     display: flex;
     align-items: center;
     justify-content: end;
@@ -210,7 +210,7 @@ export default {
 }
 
 .right-chevron-fade {
-    z-index: 1;
+    z-index: 9097;
     width: 100%;
     height: 6%;
     background: white;

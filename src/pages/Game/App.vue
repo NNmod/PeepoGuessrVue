@@ -658,6 +658,7 @@ export default {
 }
 
 #guess-button {
+    z-index: 99;
     position: absolute;
     left: 0;
     right: 0;

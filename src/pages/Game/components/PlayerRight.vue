@@ -102,7 +102,7 @@ export default {
 }
 
 #left-chevron-holder {
-    z-index: 1;
+    z-index: 97;
     display: flex;
     width: 100%;
     height: 28%;
@@ -160,7 +160,7 @@ export default {
 }
 
 .left-chevron-fade {
-    z-index: 1;
+    z-index: 97;
     width: 100%;
     height: 6%;
     background: white;
