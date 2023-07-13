@@ -144,6 +144,10 @@ export class Map {
 				this.data.sorting = Number.isInteger(worldSettings.sorting) ? worldSettings.sorting : this.data.sorting;
 
 				this.data.startPos = {...this.data.startPos, ...vecArrToObj(worldSettings.startPos, true)};
+				
+				this.data.minPos = {...this.data.minPos, ...vecArrToObj(worldSettings.minPos, true)}
+
+				this.data.maxPos = {...this.data.maxPos, ...vecArrToObj(worldSettings.maxPos, true)}
 
 				if (worldSettings.skyColor && worldSettings.skyColor.length >= 3) {
 					this.data.skyColor.setRGB(
