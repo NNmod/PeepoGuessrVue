@@ -65,6 +65,9 @@ export class Map {
 			startPos: {x: 0, z: 0},
 			minPos: {x: -4000, z: -4000},
 			maxPos: {x: 4000, z: 4000},
+			minHeight: 63,
+			height: 75,
+			maxHeight: 86,
 			skyColor: new Color(),
 			ambientLight: 0,
 			hires: {
@@ -145,9 +148,15 @@ export class Map {
 
 				this.data.startPos = {...this.data.startPos, ...vecArrToObj(worldSettings.startPos, true)};
 
-				this.data.minPos = {...this.data.minPos, ...vecArrToObj(worldSettings.minPos, true)}
+				this.data.minPos = {...this.data.minPos, ...vecArrToObj(worldSettings.minPos, true)};
 
-				this.data.maxPos = {...this.data.maxPos, ...vecArrToObj(worldSettings.maxPos, true)}
+				this.data.maxPos = {...this.data.maxPos, ...vecArrToObj(worldSettings.maxPos, true)};
+				
+				this.data.minHeight = Number.isInteger(worldSettings.minHeight) ? worldSettings.minHeight : this.data.minHeight;
+
+				this.data.height = Number.isInteger(worldSettings.height) ? worldSettings.height : this.data.height;
+
+				this.data.maxHeight = Number.isInteger(worldSettings.maxHeight) ? worldSettings.maxHeight : this.data.maxHeight;
 
 				if (worldSettings.skyColor && worldSettings.skyColor.length >= 3) {
 					this.data.skyColor.setRGB(

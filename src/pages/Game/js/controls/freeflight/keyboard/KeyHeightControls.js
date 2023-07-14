@@ -111,10 +111,10 @@ export class KeyHeightControls {
         smoothing = MathUtils.clamp(smoothing, 0, 1);
 
         this.manager.position.y += this.deltaY * smoothing * this.speed * delta * 0.06;
-        if (this.manager.position.y < 63)
-            this.manager.position.y = 63;
-        if (this.manager.position.y > 86)
-            this.manager.position.y = 86;
+        if (this.manager.position.y < this.manager.mapViewer.map.data.minHeight)
+            this.manager.position.y = this.manager.mapViewer.map.data.minHeight;
+        if (this.manager.position.y > this.manager.mapViewer.map.data.maxHeight)
+            this.manager.position.y = this.manager.mapViewer.map.data.maxHeight;
 
         this.deltaY *= 1 - smoothing;
         if (Math.abs(this.deltaY) < 0.0001) {

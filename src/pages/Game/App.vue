@@ -317,7 +317,7 @@ export default {
                 seconds: 0
             }
             await this.playMap.switchMap(this.game.round.mapUrl);
-            await this.playMap.setFreeFlight(0, 75);
+            await this.playMap.setFreeFlight(0);
             await this.playMap.mapViewer.controlsManager.position.set(this.game.round.posX, 75, this.game.round.posY);
             await this.guessMap.switchMap(this.game.round.mapUrl);
             await this.guessMap.setFlatView(0);

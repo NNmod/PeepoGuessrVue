@@ -105,7 +105,7 @@ export default {
         this.guessMap.popupMarkerSet.add(guessMarker);
         
         await this.playMap.switchMap(this.map);
-        await this.playMap.setFreeFlight(0, 75);
+        await this.playMap.setFreeFlight(0);
         await this.playMap.mapViewer.controlsManager.position.set(this.spawnX, 75, this.spawnZ);
         await this.guessMap.switchMap(this.map);
         await this.guessMap.setFlatView(0);
