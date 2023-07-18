@@ -41,7 +41,7 @@ async function load() {
         });
         const urlParams = new URLSearchParams(window.location.search);
         const gameCode = urlParams.get('code');
-        vue.use(VueSignalR, { url: 'https://ppg.nnmod.com/api/signalr/game/' + gameCode, automaticReconnect: true });
+        vue.use(VueSignalR, { url: window.location.origin + '/api/signalr/game/' + gameCode, automaticReconnect: true });
         vue.use(i18nModule);
         await loadLanguageSettings();
         const app = vue.mount('#app');

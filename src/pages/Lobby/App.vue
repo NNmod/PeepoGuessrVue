@@ -18,7 +18,7 @@
             </div>
             <div v-else-if="redirectGame !== null">
                 <div class="headline-holder">
-                    <a class="headline-flash" :href="'https://ppg.nnmod.com/game.html?code=' + this.redirectGame.gameCode">{{ $t('home.menu.comeback') }}</a>
+                    <a class="headline-flash" :href="origin + '/game.html?code=' + this.redirectGame.gameCode">{{ $t('home.menu.comeback') }}</a>
                 </div>
                 <div id="menu-title">{{ $t('lobby.untilOver') }}</div>
             </div>
@@ -49,7 +49,7 @@
         </div>
     </div>
     <div id="low-holder">
-        <a class="button button-grow button-max-width" href="https://ppg.nnmod.com">{{ $t('game.summary.toMenu') }}</a>
+        <a class="button button-grow button-max-width" :href="origin">{{ $t('game.summary.toMenu') }}</a>
     </div>
 </template>
 
@@ -69,6 +69,7 @@ export default {
     },
     data() {
         return {
+            origin: null,
             isError: true,
             signalr: null,
             lobbyType: '',
@@ -109,7 +110,7 @@ export default {
             this.countdownComeback();
         },
         gameFound(value) {
-            location.replace('https://ppg.nnmod.com/game.html?code=' + value.code);
+            location.replace(this.origin + '/game.html?code=' + value.code);
         },
         countdownComeback() {
             let x = setInterval(async () => {
@@ -123,7 +124,7 @@ export default {
             }, 1000)
         },
         randomToggle() {
-            fetch('https://ppg.nnmod.com/api/lobby/lobby/random',{
+            fetch(this.origin + '/api/lobby/lobby/random',{
                 method:  'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -135,7 +136,7 @@ export default {
                 .catch()
         },
         inviteUser(id) {
-            fetch('https://ppg.nnmod.com/api/lobby/lobby/invite',{
+            fetch(this.origin + '/api/lobby/lobby/invite',{
                 method:  'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -146,7 +147,7 @@ export default {
             }).then().catch()
         },
         revokeInviteUser(id) {
-            fetch('https://ppg.nnmod.com/api/lobby/lobby/invite/remove',{
+            fetch(this.origin + '/api/lobby/lobby/invite/remove',{
                 method:  'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -197,6 +198,7 @@ export default {
         }
     },
     mounted() {
+        this.origin = window.location.origin;
         this.signalr = useSignalR();
         this.signalr.connectionSuccess(() => this.isError = false);
         this.signalr.connection.onclose(() => this.connectionError());

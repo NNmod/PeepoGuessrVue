@@ -70,7 +70,7 @@
                             </div>
                         </div>
                     </div>
-                    <a class="button" href="https://ppg.nnmod.com">{{ $t('game.summary.toMenu') }}</a>
+                    <a class="button" :href="origin">{{ $t('game.summary.toMenu') }}</a>
                 </div>
             </div>
         </div>   
@@ -90,6 +90,7 @@ export default {
     },
     data() {
         return {
+            origin: null,
             d1Users: [],
             d2Users: [],
             d3Users: [],
@@ -101,7 +102,7 @@ export default {
     },
     methods: {
         loadUser() {
-            fetch('https://ppg.nnmod.com/api/account/user')
+            fetch(this.origin + '/api/account/user')
                 .then(response => response.json())
                 .then(data => {
                     this.user = {
@@ -124,7 +125,7 @@ export default {
             if (this.page >= this.pages && !isForced)
                 return;
             this.isLoading = true;
-            fetch('https://ppg.nnmod.com/api/account/user/leaderboard?page=' + this.page)
+            fetch(this.origin + '/api/account/user/leaderboard?page=' + this.page)
                 .then(response => response.json())
                 .then(data => {
                     console.log(data);
@@ -186,6 +187,7 @@ export default {
         }
     },
     mounted() {
+        this.origin = window.location.origin;
         this.loadUser();
         
         window.onscroll = () => {

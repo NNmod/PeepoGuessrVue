@@ -6,13 +6,13 @@
             <div v-if="account.isLoaded">
                 <div v-if="account.data.worksExpire === null">
                     <div class="headline-holder" v-if="account.data.gameCode">
-                        <a class="headline-flash" :href="'https://ppg.nnmod.com/game.html?code=' + account.data.gameCode">{{ $t('home.menu.comeback') }}</a>
+                        <a class="headline-flash" :href="origin + '/game.html?code=' + account.data.gameCode">{{ $t('home.menu.comeback') }}</a>
                     </div>
                     <div class="headline-holder">
-                        <a class="headline enabled" href="https://ppg.nnmod.com/lobby.html?type=singleplayer">{{ $t('home.menu.single') }}</a>
+                        <a class="headline enabled" :href="origin + '/lobby.html?type=singleplayer'">{{ $t('home.menu.single') }}</a>
                     </div>
                     <div class="headline-holder">
-                        <a class="headline enabled" href="https://ppg.nnmod.com/lobby.html?type=multiplayer">{{ $t('home.menu.multi') }}</a>
+                        <a class="headline enabled" :href="origin + '/lobby.html?type=multiplayer'">{{ $t('home.menu.multi') }}</a>
                     </div>
                     <div class="headline-holder">
                         <button class="headline disabled">{{ $t('home.menu.party') }}</button>
@@ -44,7 +44,7 @@
                          :division-id="account.data.divisionId"/>
             <div id="player-controls">
                 <!--<a class="button button-grow">{{ $t('home.playerMenu.profile') }}</a>-->
-                <a class="button button-grow" href="http://ppg.nnmod.com/leaderboard.html">{{ $t('home.playerMenu.leaderboard') }}</a>
+                <a class="button button-grow" :href="origin + '/leaderboard.html'">{{ $t('home.playerMenu.leaderboard') }}</a>
             </div>
         </div>
         <div v-else-if="account.isLoaded" id="authorize-button">
@@ -101,6 +101,7 @@ export default {
     },
     data() {
         return {
+            origin: null,
             account: {
                 isLoaded: false,
                 isAuthorize: false,
@@ -132,7 +133,7 @@ export default {
     },
     methods: {
         getUser() {
-            fetch('https://ppg.nnmod.com/api/account/user')
+            fetch(this.origin + '/api/account/user')
                 .then(response => response.json())
                 .then(data => {
                     this.account.isLoaded = true;
@@ -159,7 +160,7 @@ export default {
         },
         authorize() {
             const  [top, left] = this.centerWindow(560, 640)
-            const loginWindow = window.open('https://ppg.nnmod.com/api/account/user/sign-in/preprocessing', 'loginWindow',
+            const loginWindow = window.open(this.origin + '/api/account/user/sign-in/preprocessing', 'loginWindow',
                 'location=yes,height=720,width=560,left='+left+',top='+top+'scrollbars=yes,status=yes');
 
             window.addEventListener('message', (event) => {
@@ -224,6 +225,7 @@ export default {
         }
     },
     mounted() {
+        this.origin = window.location.origin;
         this.getUser();
         this.settings.effectsVol = localStorage.getItem('evol') || 100;
         this.settings.musicVol = localStorage.getItem('mvol') || 100;

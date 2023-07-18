@@ -87,7 +87,7 @@
                 </div>
             </div>
             <div id="low-summary-holder">
-                <a class="button-2" href="https://ppg.nnmod.com">{{ $t('game.summary.toMenu') }}</a>
+                <a class="button-2" :href="origin">{{ $t('game.summary.toMenu') }}</a>
             </div>
         </div>
     </div>
@@ -162,6 +162,7 @@ export default {
     },
     data() {
         return {
+            origin: null,
             test: 0,
             playMap: null,
             guessMap: null,
@@ -225,7 +226,7 @@ export default {
         guess() {
             if (this.guessMarker && this.guessMarker.position && !this.guessProcess) {
                 this.guessProcess = true;
-                fetch('https://ppg.nnmod.com/api/game/game/guess',{
+                fetch(this.origin + '/api/game/game/guess',{
                     method:  'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -530,6 +531,7 @@ export default {
         }
     },
     async mounted() {
+        this.origin = window.location.origin;
         this.signalr = useSignalR();
         this.signalr.connection.onclose(() => this.connectionError());
         this.signalr.on('Error', () => this.error());

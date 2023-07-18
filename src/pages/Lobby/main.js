@@ -18,7 +18,7 @@ async function load() {
     const urlParams = new URLSearchParams(window.location.search);
     const lobbyType = urlParams.get('type');
     // load languages
-    vue.use(VueSignalR, { url: 'https://ppg.nnmod.com/api/signalr/lobby/' + lobbyType, automaticReconnect: true });
+    vue.use(VueSignalR, { url: window.location.origin + '/api/signalr/lobby/' + lobbyType, automaticReconnect: true });
     vue.use(i18nModule);
     await loadLanguageSettings();
     const app = vue.mount('#app');
